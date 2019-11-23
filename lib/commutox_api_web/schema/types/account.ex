@@ -18,8 +18,8 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
   end
 
   object :account_mutations do
-    @desc "Creates a user"
-    payload field(:create_user) do
+    @desc "Signs up a user"
+    payload field(:sign_up) do
       input do
         field :email, non_null(:string)
         field :full_name, non_null(:string)
@@ -28,10 +28,26 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
       end
 
       output do
+        field :token, :string
         field :user, :user
       end
 
-      resolve(&Resolvers.Account.create_user/2)
+      resolve(&Resolvers.Account.sign_up/2)
+    end
+
+    @desc "Signs in a user"
+    payload field(:sign_in) do
+      input do
+        field :email, non_null(:string)
+        field :password, non_null(:string)
+      end
+
+      output do
+        field :token, :string
+        field :user, :user
+      end
+
+      resolve(&Resolvers.Account.sign_in/2)
     end
   end
 

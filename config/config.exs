@@ -17,6 +17,11 @@ config :commutox_api, CommutoxApiWeb.Endpoint,
   render_errors: [view: CommutoxApiWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: CommutoxApi.PubSub, adapter: Phoenix.PubSub.PG2]
 
+# Configures Guardian
+config :commutox_api, CommutoxApi.Accounts.Guardian,
+  issuer: "commutox_api_dev",
+  secret_key: "xJiBb912HUUht8VVh5KXoHc0AwdwtgLOESjhF4r7N+d8/g6TXLBbnfkq2U26s0Vj"
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

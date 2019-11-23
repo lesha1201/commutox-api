@@ -58,7 +58,7 @@ defmodule CommutoxApi.Accounts do
 
   Returns `nil` if the User does not exist.
   """
-  def get_user_by_email(email), do: Repo.get_by(User, email: email)
+  def get_user_by(clauses), do: Repo.get_by(User, clauses)
 
   @doc """
   Creates a user.

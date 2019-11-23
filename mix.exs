@@ -45,7 +45,8 @@ defmodule CommutoxApi.MixProject do
       {:absinthe_phoenix, "~> 1.4"},
       {:absinthe_plug, "~> 1.4"},
       {:absinthe_relay, "~> 1.4"},
-      {:argon2_elixir, "~> 2.1"}
+      {:argon2_elixir, "~> 2.1"},
+      {:guardian, "~> 2.0"}
     ]
   end
 

@@ -8,21 +8,28 @@ defmodule CommutoxApiWeb.Resolvers.Account do
   end
 
   def user(_parent, %{email: email}, _resolution) do
-    {:ok, Accounts.get_user_by_email(email)}
+    {:ok, Accounts.get_user_by(email: email)}
   end
 
   # Mutations
 
-  def create_user(args, _) do
-    case Accounts.create_user(args) do
-      {:ok, user} ->
-        {:ok, %{user: user}}
+  def sign_up(args, _) do
+    with {:ok, user} <- Accounts.create_user(args),
+         {:ok, jwt_token, _} <- Accounts.Guardian.encode_and_sign(user) do
+      {:ok, %{user: user, token: jwt_token}}
+    else
+      {:error, error} -> {:error, error}
+      :error -> {:error, "Can't sign up a user."}
+    end
+  end
 
-      {:error, error} ->
-        {:error, error}
-
-      _ ->
-        {:error, "Can't create a user."}
+  def sign_in(args, _) do
+    with {:ok, user} <- Accounts.Session.authenticate(args),
+         {:ok, jwt_token, _} <- Accounts.Guardian.encode_and_sign(user) do
+      {:ok, %{user: user, token: jwt_token}}
+    else
+      {:error, error} -> {:error, error}
+      :error -> {:error, "Can't sign in a user."}
     end
   end
 end

@@ -28,7 +28,5 @@ defmodule CommutoxApi.Accounts.User do
     change(changeset, Argon2.add_hash(password))
   end
 
-  defp hash_password(changeset) do
-    changeset
-  end
+  defp hash_password(changeset), do: changeset
 end
