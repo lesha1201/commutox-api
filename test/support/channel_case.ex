@@ -15,6 +15,8 @@ defmodule CommutoxApiWeb.ChannelCase do
 
   use ExUnit.CaseTemplate
 
+  alias Ecto.Adapters.SQL
+
   using do
     quote do
       # Import conveniences for testing with channels
@@ -26,10 +28,10 @@ defmodule CommutoxApiWeb.ChannelCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(CommutoxApi.Repo)
+    :ok = SQL.Sandbox.checkout(CommutoxApi.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(CommutoxApi.Repo, {:shared, self()})
+      SQL.Sandbox.mode(CommutoxApi.Repo, {:shared, self()})
     end
 
     :ok

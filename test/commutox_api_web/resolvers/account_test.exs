@@ -16,33 +16,33 @@ defmodule CommutoxApiWeb.Resolvers.AccountTest do
   @user_schema_fields [:id, :email, :full_name]
 
   @users_query """
-    query Users {
-      users {
-        #{build_query_fields(@user_schema_fields)}
-      }
+  query Users {
+    users {
+      #{build_query_fields(@user_schema_fields)}
     }
+  }
   """
 
   @sign_up_mutation """
-    mutation SignUp($input: SignUpInput!) {
-      signUp(input: $input) {
-        user {
-          #{build_query_fields(@user_schema_fields)}
-        }
-        token
+  mutation SignUp($input: SignUpInput!) {
+    signUp(input: $input) {
+      user {
+        #{build_query_fields(@user_schema_fields)}
       }
+      token
     }
+  }
   """
 
   @sign_in_mutation """
-    mutation SignIn($input: SignInInput!) {
-      signIn(input: $input) {
-        user {
-          #{build_query_fields(@user_schema_fields)}
-        }
-        token
+  mutation SignIn($input: SignInInput!) {
+    signIn(input: $input) {
+      user {
+        #{build_query_fields(@user_schema_fields)}
       }
+      token
     }
+  }
   """
 
   def user_fixture(attrs \\ %{}) do

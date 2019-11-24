@@ -14,6 +14,8 @@ defmodule CommutoxApi.DataCase do
 
   use ExUnit.CaseTemplate
 
+  alias Ecto.Adapters.SQL
+
   using do
     quote do
       alias CommutoxApi.Repo
@@ -26,10 +28,10 @@ defmodule CommutoxApi.DataCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(CommutoxApi.Repo)
+    :ok = SQL.Sandbox.checkout(CommutoxApi.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(CommutoxApi.Repo, {:shared, self()})
+      SQL.Sandbox.mode(CommutoxApi.Repo, {:shared, self()})
     end
 
     :ok
