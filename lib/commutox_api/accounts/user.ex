@@ -1,12 +1,17 @@
 defmodule CommutoxApi.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
+  alias CommutoxApi.Chats.{Chat, ChatMember, Message}
 
   schema "users" do
     field :email, :string, unique: true
     field :full_name, :string
     field :password_hash, :string
     field :password, :string, virtual: true
+
+    has_many :messages, Message
+    has_many :chat_members, ChatMember
+    many_to_many :chats, Chat, join_through: ChatMember
 
     timestamps()
   end

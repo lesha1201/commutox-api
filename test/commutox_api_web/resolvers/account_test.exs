@@ -2,6 +2,7 @@ defmodule CommutoxApiWeb.Resolvers.AccountTest do
   use CommutoxApiWeb.ConnCase
 
   import Absinthe.Relay.Node
+  import CommutoxApi.Fixtures
 
   alias CommutoxApi.Accounts
   alias CommutoxApiWeb.Schema
@@ -44,15 +45,6 @@ defmodule CommutoxApiWeb.Resolvers.AccountTest do
     }
   }
   """
-
-  def user_fixture(attrs \\ %{}) do
-    {:ok, user} =
-      attrs
-      |> Enum.into(@user_attrs)
-      |> Accounts.create_user()
-
-    user
-  end
 
   describe "queries" do
     test "`users` returns all users", %{conn: conn} do
