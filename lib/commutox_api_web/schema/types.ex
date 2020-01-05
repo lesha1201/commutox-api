@@ -3,6 +3,8 @@ defmodule CommutoxApiWeb.Schema.Types do
 
   alias CommutoxApiWeb.Schema.Types
 
-  import_types(Types.Relay)
+  import_types(Absinthe.Type.Custom)
   import_types(Types.Account)
+  import_types(Types.Chat)
+  import_types(Types.Relay)
 end

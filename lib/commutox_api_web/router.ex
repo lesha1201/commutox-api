@@ -3,6 +3,7 @@ defmodule CommutoxApiWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug CommutoxApiWeb.Plugs.Context
   end
 
   scope "/api" do

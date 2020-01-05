@@ -38,6 +38,22 @@ defmodule CommutoxApi.Chats do
   def get_chat!(id), do: Repo.get!(Chat, id)
 
   @doc """
+  Gets a single chat.
+
+  Returns `nil` if the Chat does not exist.
+
+  ## Examples
+
+      iex> get_chat(123)
+      %Chat{}
+
+      iex> get_chat(456)
+      nil
+
+  """
+  def get_chat(id), do: Repo.get(Chat, id)
+
+  @doc """
   Creates a chat.
 
   ## Examples
@@ -134,6 +150,22 @@ defmodule CommutoxApi.Chats do
   def get_chat_member!(id), do: Repo.get!(ChatMember, id)
 
   @doc """
+  Gets a single chat_member
+
+  Returns `nil` if the User does not exist.
+
+  ## Examples
+
+      iex> get_chat_member(123)
+      %ChatMember{}
+
+      iex> get_chat_member(456)
+      nil
+
+  """
+  def get_chat_member(id), do: Repo.get(ChatMember, id)
+
+  @doc """
   Creates a chat_member.
 
   ## Examples
@@ -228,6 +260,22 @@ defmodule CommutoxApi.Chats do
 
   """
   def get_message!(id), do: Repo.get!(Message, id)
+
+  @doc """
+  Gets a single message.
+
+  Returns `nil` if the Message does not exist.
+
+  ## Examples
+
+      iex> get_message(123)
+      %Message{}
+
+      iex> get_message(456)
+      nil
+
+  """
+  def get_message(id), do: Repo.get(Message, id)
 
   @doc """
   Creates a message.

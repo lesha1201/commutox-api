@@ -1,14 +1,20 @@
 defmodule CommutoxApiWeb.Resolvers.Account do
-  alias CommutoxApi.{Accounts}
+  alias Absinthe.Relay.Connection
+  alias CommutoxApi.{Accounts, Repo}
 
   # Queries
 
-  def users(_parent, _args, _resolution) do
-    {:ok, Accounts.list_users()}
+  def list_users(args, _resolution) do
+    Accounts.User
+    |> Connection.from_query(&Repo.all/1, args)
   end
 
-  def user(_parent, %{email: email}, _resolution) do
+  def user(_parent, %{email: email}, %{context: %{current_user: _current_user}}) do
     {:ok, Accounts.get_user_by(email: email)}
+  end
+
+  def user(_, _, _) do
+    {:error, "You should be authorized."}
   end
 
   # Mutations
