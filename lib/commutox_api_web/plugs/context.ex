@@ -33,7 +33,7 @@ defmodule CommutoxApiWeb.Plugs.Context do
     end
   end
 
-  defp create_dataloader() do
+  defp create_dataloader do
     Dataloader.new()
     |> Dataloader.add_source(:commutox_repo, Dataloader.Ecto.new(CommutoxApi.Repo))
   end
