@@ -48,7 +48,7 @@ defmodule CommutoxApi.MixProject do
       {:dataloader, "~> 1.0"},
       {:argon2_elixir, "~> 2.1"},
       {:guardian, "~> 2.0"},
-      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.2", only: [:dev, :test], runtime: false}
     ]
   end
 

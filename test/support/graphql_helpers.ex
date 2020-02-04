@@ -17,10 +17,12 @@ defmodule CommutoxApiWeb.GraphqlHelpers do
   end
 
   def build_query(options) do
+    processed_variables = options[:variables] |> process_variables()
+
     %{
       "operationName" => options[:operation_name],
       "query" => options[:query],
-      "variables" => options[:variables]
+      "variables" => processed_variables
     }
   end
 
@@ -28,6 +30,15 @@ defmodule CommutoxApiWeb.GraphqlHelpers do
     fields
     |> Enum.map(fn k -> k |> Atom.to_string() |> camelize(lower: true) end)
     |> Enum.join(" ")
+  end
+
+  @doc """
+  Converts snake case keys in map into camel case
+  """
+  def process_variables(variables) do
+    variables
+    |> Enum.map(fn {k, v} -> {k |> Atom.to_string() |> camelize(lower: true), v} end)
+    |> Enum.into(%{})
   end
 
   @doc """
@@ -54,5 +65,25 @@ defmodule CommutoxApiWeb.GraphqlHelpers do
       }
     end)
     |> Enum.into(%{})
+  end
+
+  def has_connection_with(response, target_name, connection_name)
+      when is_binary(target_name) and is_binary(connection_name) do
+    targets = get_in(response, ["data", target_name, "edges"])
+
+    connections =
+      get_in(targets, [
+        fn :get, data, next -> Enum.map(data, next) end,
+        "node",
+        connection_name,
+        "edges"
+      ])
+      |> Enum.flat_map(& &1)
+
+    length(targets) > 0 && length(connections) > 0
+  end
+
+  def has_connection_with(_, _, _) do
+    raise ArgumentError, message: "target_name, connection_name should be string"
   end
 end

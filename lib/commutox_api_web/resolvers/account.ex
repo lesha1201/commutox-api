@@ -4,9 +4,13 @@ defmodule CommutoxApiWeb.Resolvers.Account do
 
   # Queries
 
-  def list_users(args, _resolution) do
+  def list_users(args, %{context: %{current_user: _current_user}}) do
     Accounts.User
     |> Connection.from_query(&Repo.all/1, args)
+  end
+
+  def list_users(_, _) do
+    {:error, "You should be authorized."}
   end
 
   def user(_parent, %{email: email}, %{context: %{current_user: _current_user}}) do
