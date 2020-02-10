@@ -22,7 +22,6 @@ defmodule CommutoxApiWeb.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
       alias CommutoxApiWeb.Router.Helpers, as: Routes
-      import CommutoxApiWeb.GraphqlHelpers
 
       # The default endpoint for testing
       @endpoint CommutoxApiWeb.Endpoint

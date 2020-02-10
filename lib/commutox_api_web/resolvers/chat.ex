@@ -5,6 +5,7 @@ defmodule CommutoxApiWeb.Resolvers.Chat do
   alias CommutoxApi.{Repo}
   alias CommutoxApi.Accounts.{User}
   alias CommutoxApi.Chats.{Chat, ChatMember, Message}
+  alias CommutoxApiWeb.Errors
 
   # Queries
 
@@ -21,7 +22,7 @@ defmodule CommutoxApiWeb.Resolvers.Chat do
   end
 
   def list_chats(_, _) do
-    {:error, "You should be authorized."}
+    {:error, Errors.unauthorized()}
   end
 
   def list_chat_members(args, %{context: %{current_user: current_user}}) do
@@ -35,7 +36,7 @@ defmodule CommutoxApiWeb.Resolvers.Chat do
   end
 
   def list_chat_members(_, _) do
-    {:error, "You should be authorized."}
+    {:error, Errors.unauthorized()}
   end
 
   def list_messages(args, %{context: %{current_user: current_user}}) do
@@ -52,6 +53,6 @@ defmodule CommutoxApiWeb.Resolvers.Chat do
   end
 
   def list_messages(_, _) do
-    {:error, "You should be authorized."}
+    {:error, Errors.unauthorized()}
   end
 end

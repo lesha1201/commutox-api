@@ -134,6 +134,7 @@ defmodule CommutoxApiWeb.Graphql.Queries.UserTest do
         },
         "errors" => [
           %{
+            "extensions" => %{"code" => "FORBIDDEN"},
             "locations" => [%{"column" => 0, "line" => 4}],
             "message" => "User chats are only available for the authenticated user.",
             "path" => ["user", "chats"]
@@ -177,6 +178,7 @@ defmodule CommutoxApiWeb.Graphql.Queries.UserTest do
         },
         "errors" => [
           %{
+            "extensions" => %{"code" => "FORBIDDEN"},
             "locations" => [%{"column" => 0, "line" => 4}],
             "message" => "User chat members are only available for the authenticated user.",
             "path" => ["user", "chatMembers"]
@@ -220,6 +222,7 @@ defmodule CommutoxApiWeb.Graphql.Queries.UserTest do
         },
         "errors" => [
           %{
+            "extensions" => %{"code" => "FORBIDDEN"},
             "locations" => [%{"column" => 0, "line" => 4}],
             "message" => "User messages are only available for the authenticated user.",
             "path" => ["user", "messages"]
@@ -244,6 +247,7 @@ defmodule CommutoxApiWeb.Graphql.Queries.UserTest do
         "data" => %{"user" => nil},
         "errors" => [
           %{
+            "extensions" => %{"code" => "UNAUTHORIZED"},
             "locations" => [%{"column" => 0, "line" => 2}],
             "message" => "You should be authorized.",
             "path" => ["user"]

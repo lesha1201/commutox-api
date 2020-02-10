@@ -6,6 +6,7 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
 
   alias Absinthe.Relay.Connection
   alias CommutoxApiWeb.Resolvers
+  alias CommutoxApiWeb.Errors
 
   object :account_queries do
     @desc "Gets a list of all users"
@@ -74,7 +75,10 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
             end)
 
           true ->
-            {:error, "User chat members are only available for the authenticated user."}
+            {:error,
+             Errors.forbidden(%{
+               message: "User chat members are only available for the authenticated user."
+             })}
         end
       end)
     end
@@ -92,7 +96,10 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
             end)
 
           true ->
-            {:error, "User messages are only available for the authenticated user."}
+            {:error,
+             Errors.forbidden(%{
+               message: "User messages are only available for the authenticated user."
+             })}
         end
       end)
     end
@@ -110,7 +117,10 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
             end)
 
           true ->
-            {:error, "User chats are only available for the authenticated user."}
+            {:error,
+             Errors.forbidden(%{
+               message: "User chats are only available for the authenticated user."
+             })}
         end
       end)
     end

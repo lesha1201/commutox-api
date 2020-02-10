@@ -239,6 +239,7 @@ defmodule CommutoxApiWeb.Graphql.Queries.ChatsTest do
           %{
             "locations" => [%{"column" => 0, "line" => 2}],
             "message" => "You should be authorized.",
+            "extensions" => %{"code" => "UNAUTHORIZED"},
             "path" => ["chats"]
           }
         ]

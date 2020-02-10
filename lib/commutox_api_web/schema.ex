@@ -18,4 +18,10 @@ defmodule CommutoxApiWeb.Schema do
   def plugins do
     [Absinthe.Middleware.Dataloader] ++ Absinthe.Plugin.defaults()
   end
+
+  def middleware(middleware, _field, %{identifier: :mutation}) do
+    middleware ++ [CommutoxApiWeb.Schema.Middleware.HandleAPIErrors]
+  end
+
+  def middleware(middleware, _, _), do: middleware
 end

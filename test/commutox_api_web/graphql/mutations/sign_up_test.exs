@@ -51,4 +51,39 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SignUpTest do
     assert user_from_database != nil
     assert {:ok, _claims} = Accounts.Guardian.decode_and_verify(token)
   end
+
+  test "`sign_up` returns error when input is invalid", %{conn: conn} do
+    query_variables = %{
+      input: %{
+        email: "invalid email",
+        full_name: "Full Name",
+        password: "pass",
+        password_confirmation: "ssap"
+      }
+    }
+
+    %{resp_decoded: resp_decoded} =
+      graphql_query(conn, query: @sign_up_mutation, variables: query_variables)
+
+    expected_response = %{
+      "data" => %{"signUp" => nil},
+      "errors" => [
+        %{
+          "extensions" => %{
+            "code" => "INVALID_INPUT",
+            "details" => %{
+              "email" => ["has invalid format"],
+              "password" => ["should be at least 8 character(s)"],
+              "passwordConfirmation" => ["does not match confirmation"]
+            }
+          },
+          "locations" => [%{"column" => 0, "line" => 2}],
+          "message" => "Validation error occured.",
+          "path" => ["signUp"]
+        }
+      ]
+    }
+
+    assert resp_decoded == expected_response
+  end
 end

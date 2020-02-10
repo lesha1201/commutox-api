@@ -36,9 +36,7 @@ defmodule CommutoxApiWeb.GraphqlHelpers do
   Converts snake case keys in map into camel case
   """
   def process_variables(variables) do
-    variables
-    |> Enum.map(fn {k, v} -> {k |> Atom.to_string() |> camelize(lower: true), v} end)
-    |> Enum.into(%{})
+    CommutoxUtils.Map.to_camel_case(variables)
   end
 
   @doc """

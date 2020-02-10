@@ -14,6 +14,7 @@
   "dataloader": {:hex, :dataloader, "1.0.6", "fb724d6d3fb6acb87d27e3b32dea3a307936ad2d245faf9cf5221d1323d6a4ba", [:mix], [{:ecto, ">= 0.0.0", [hex: :ecto, repo: "hexpm", optional: true]}], "hexpm"},
   "db_connection": {:hex, :db_connection, "2.1.1", "a51e8a2ee54ef2ae6ec41a668c85787ed40cb8944928c191280fe34c15b76ae5", [:mix], [{:connection, "~> 1.0.2", [hex: :connection, repo: "hexpm", optional: false]}], "hexpm"},
   "decimal": {:hex, :decimal, "1.8.1", "a4ef3f5f3428bdbc0d35374029ffcf4ede8533536fa79896dd450168d9acdf3c", [:mix], [], "hexpm"},
+  "deep_merge": {:hex, :deep_merge, "1.0.0", "b4aa1a0d1acac393bdf38b2291af38cb1d4a52806cf7a4906f718e1feb5ee961", [:mix], [], "hexpm"},
   "ecto": {:hex, :ecto, "3.2.4", "f1b59b5c56f842a73a8b3ca7fc2dbdffe00bcfc3945853c9962708f6cc403a0c", [:mix], [{:decimal, "~> 1.6", [hex: :decimal, repo: "hexpm", optional: false]}, {:jason, "~> 1.0", [hex: :jason, repo: "hexpm", optional: true]}], "hexpm"},
   "ecto_sql": {:hex, :ecto_sql, "3.2.1", "4eed4100cbb2abcff10c46660d6613693807bf64f1b865f414daccf762d3758d", [:mix], [{:db_connection, "~> 2.1", [hex: :db_connection, repo: "hexpm", optional: false]}, {:ecto, "~> 3.2.0", [hex: :ecto, repo: "hexpm", optional: false]}, {:myxql, "~> 0.2.0", [hex: :myxql, repo: "hexpm", optional: true]}, {:postgrex, "~> 0.15.0", [hex: :postgrex, repo: "hexpm", optional: true]}, {:telemetry, "~> 0.4.0", [hex: :telemetry, repo: "hexpm", optional: false]}], "hexpm"},
   "elixir_make": {:hex, :elixir_make, "0.6.0", "38349f3e29aff4864352084fc736fa7fa0f2995a819a737554f7ebd28b85aaab", [:mix], [], "hexpm"},

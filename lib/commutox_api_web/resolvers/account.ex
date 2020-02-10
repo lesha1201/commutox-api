@@ -1,6 +1,7 @@
 defmodule CommutoxApiWeb.Resolvers.Account do
   alias Absinthe.Relay.Connection
   alias CommutoxApi.{Accounts, Repo}
+  alias CommutoxApiWeb.Errors
 
   # Queries
 
@@ -10,7 +11,7 @@ defmodule CommutoxApiWeb.Resolvers.Account do
   end
 
   def list_users(_, _) do
-    {:error, "You should be authorized."}
+    {:error, Errors.unauthorized()}
   end
 
   def user(_parent, %{email: email}, %{context: %{current_user: _current_user}}) do
@@ -18,7 +19,7 @@ defmodule CommutoxApiWeb.Resolvers.Account do
   end
 
   def user(_, _, _) do
-    {:error, "You should be authorized."}
+    {:error, Errors.unauthorized()}
   end
 
   # Mutations
@@ -28,8 +29,11 @@ defmodule CommutoxApiWeb.Resolvers.Account do
          {:ok, jwt_token, _} <- Accounts.Guardian.encode_and_sign(user) do
       {:ok, %{user: user, token: jwt_token}}
     else
-      {:error, error} -> {:error, error}
-      :error -> {:error, "Can't sign up a user."}
+      {:error, error} ->
+        {:error, error}
+
+      :error ->
+        {:error, "Can't sign up a user."}
     end
   end
 

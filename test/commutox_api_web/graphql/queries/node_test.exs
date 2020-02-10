@@ -1,9 +1,9 @@
 defmodule CommutoxApiWeb.Graphql.Queries.NodeTest do
   use CommutoxApiWeb.ConnCase
 
-  import Absinthe.Relay.Node
-  import CommutoxApi.Fixtures
   import CommutoxApiWeb.ConnHelpers
+  import CommutoxApiWeb.GraphqlHelpers
+  import CommutoxApi.Fixtures
 
   setup %{conn: conn} = context do
     {:ok, %{user: user}} = user_fixture()
@@ -39,7 +39,7 @@ defmodule CommutoxApiWeb.Graphql.Queries.NodeTest do
     assert Map.equal?(resp_decoded, expected_response)
   end
 
-  test "Chat implements Node", %{conn: conn} do
+  test "Chat implements Node", %{conn: conn, user: user} do
     query = """
       query Node($id: ID!) {
         node(id: $id) {
@@ -50,7 +50,10 @@ defmodule CommutoxApiWeb.Graphql.Queries.NodeTest do
       }
     """
 
-    chat = chat_fixture() |> to_response_format(:chat, [:id])
+    chat =
+      chat_member_fixture(%{user_id: user.id})
+      |> (fn {:ok, %{chat: chat}} -> chat end).()
+      |> to_response_format(:chat, [:id])
 
     query_variables = %{id: chat["id"]}
 
@@ -66,7 +69,7 @@ defmodule CommutoxApiWeb.Graphql.Queries.NodeTest do
     assert Map.equal?(resp_decoded, expected_response)
   end
 
-  test "ChatMember implements Node", %{conn: conn} do
+  test "ChatMember implements Node", %{conn: conn, user: user} do
     query = """
       query Node($id: ID!) {
         node(id: $id) {
@@ -77,7 +80,10 @@ defmodule CommutoxApiWeb.Graphql.Queries.NodeTest do
       }
     """
 
-    chat_member = chat_member_fixture() |> to_response_format(:chat_member, [:id])
+    chat_member =
+      chat_member_fixture(%{user_id: user.id})
+      |> (fn {:ok, %{chat_member: chat_member}} -> chat_member end).()
+      |> to_response_format(:chat_member, [:id])
 
     query_variables = %{id: chat_member["id"]}
 
@@ -93,7 +99,7 @@ defmodule CommutoxApiWeb.Graphql.Queries.NodeTest do
     assert Map.equal?(resp_decoded, expected_response)
   end
 
-  test "Message implements Node", %{conn: conn} do
+  test "Message implements Node", %{conn: conn, user: user} do
     query = """
       query Node($id: ID!) {
         node(id: $id) {
@@ -104,7 +110,12 @@ defmodule CommutoxApiWeb.Graphql.Queries.NodeTest do
       }
     """
 
-    message = message_fixture() |> to_response_format(:message, [:id])
+    {:ok, %{chat: viewer_chat}} = chat_member_fixture(%{user_id: user.id})
+
+    message =
+      message_fixture(%{user_id: user.id, chat_id: viewer_chat.id})
+      |> (fn {:ok, %{message: message}} -> message end).()
+      |> to_response_format(:message, [:id])
 
     query_variables = %{id: message["id"]}
 
