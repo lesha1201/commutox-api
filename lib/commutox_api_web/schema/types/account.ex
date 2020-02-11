@@ -5,8 +5,8 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
   import Absinthe.Resolution.Helpers, only: [on_load: 2]
 
   alias Absinthe.Relay.Connection
-  alias CommutoxApiWeb.Resolvers
   alias CommutoxApiWeb.Errors
+  alias CommutoxApiWeb.Resolvers
 
   object :account_queries do
     @desc "Gets a list of all users"

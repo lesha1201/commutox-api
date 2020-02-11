@@ -1,9 +1,9 @@
 defmodule CommutoxApiWeb.GraphqlHelpers do
   use Phoenix.ConnTest
 
-  import Absinthe.Relay.Node
   import Absinthe.Utils
 
+  alias Absinthe.Relay.Node, as: Relay
   alias CommutoxApiWeb.Schema
 
   @endpoint CommutoxApiWeb.Endpoint
@@ -40,6 +40,13 @@ defmodule CommutoxApiWeb.GraphqlHelpers do
   end
 
   @doc """
+  Binded Absinthe relay's `to_global_id` to `Schema`
+  """
+  def to_global_id(node_type, source_id) do
+    Relay.to_global_id(node_type, source_id, Schema)
+  end
+
+  @doc """
   Takes `item` from database response, takes its keys (`keys_to_take`)
   and converts it to relay-graphql response (id -> to opaque global string)
   """
@@ -49,7 +56,7 @@ defmodule CommutoxApiWeb.GraphqlHelpers do
     item
     |> Map.from_struct()
     |> Map.take(keys_to_take)
-    |> Map.put(:id, to_global_id(node_type, item.id, Schema))
+    |> Map.put(:id, to_global_id(node_type, item.id))
     |> Enum.map(fn {k, v} -> {k |> Atom.to_string() |> camelize(lower: true), v} end)
     |> Enum.into(%{})
   end

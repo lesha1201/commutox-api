@@ -84,7 +84,7 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SignInTest do
       password_confirmation: "some password"
     }
 
-    {:ok, %{user: user}} = user_fixture(user_attrs)
+    {:ok, %{user: _user}} = user_fixture(user_attrs)
 
     query_variables = %{
       input: %{
