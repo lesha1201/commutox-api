@@ -80,11 +80,11 @@ defmodule CommutoxApi.Fixtures do
 
   @chat_valid_attrs %{}
 
-  def chat_fixture(attrs \\ %{}) do
+  def chat_fixture(attrs \\ %{}, user_ids \\ []) do
     {:ok, chat} =
       attrs
       |> Enum.into(@chat_valid_attrs)
-      |> Chats.create_chat()
+      |> Chats.create_chat(user_ids)
 
     {:ok, %{chat: chat}}
   end
@@ -106,8 +106,8 @@ defmodule CommutoxApi.Fixtures do
 
   def message_fixture(message_attrs \\ %{}, b \\ %{}, c \\ %{})
 
-  def message_fixture(%{user_id: _user_id} = message_attrs, chat_attrs, _) do
-    {:ok, %{chat: chat}} = chat_fixture(chat_attrs)
+  def message_fixture(%{user_id: user_id} = message_attrs, chat_attrs, _) do
+    {:ok, %{chat: chat}} = chat_fixture(chat_attrs, [user_id])
 
     {:ok, %{message: message}} =
       message_attrs
@@ -130,7 +130,7 @@ defmodule CommutoxApi.Fixtures do
 
   def message_fixture(message_attrs, user_attrs, chat_attrs) do
     {:ok, %{user: user}} = user_fixture(user_attrs)
-    {:ok, %{chat: chat}} = chat_fixture(chat_attrs)
+    {:ok, %{chat: chat}} = chat_fixture(chat_attrs, [user.id])
 
     {:ok, %{message: message}} =
       message_attrs

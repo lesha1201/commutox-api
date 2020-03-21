@@ -103,12 +103,14 @@ defmodule CommutoxApiWeb.Graphql.Queries.ChatsTest do
     end
 
     test "quering messages on `chats` returns all chat's messages", %{conn: conn, user: viewer} do
-      {:ok, %{chat: viewer_chat}} = chat_member_fixture(%{user_id: viewer.id})
+      {:ok, %{user: participant}} = user_fixture()
+      {:ok, %{chat: viewer_chat}} = chat_fixture(%{}, [viewer.id, participant.id])
 
       {:ok, %{message: viewer_message}} =
         message_fixture(%{user_id: viewer.id, chat_id: viewer_chat.id})
 
-      {:ok, %{message: non_viewer_message}} = message_fixture(%{chat_id: viewer_chat.id})
+      {:ok, %{message: participant_message}} =
+        message_fixture(%{chat_id: viewer_chat.id, user_id: participant.id})
 
       query_variables = %{chats_first: 2, messages_first: 2}
 
@@ -118,8 +120,8 @@ defmodule CommutoxApiWeb.Graphql.Queries.ChatsTest do
       %{"id" => viewer_chat_global_id} = to_response_format(viewer_chat, :chat, [:id])
       %{"id" => viewer_message_global_id} = to_response_format(viewer_message, :message, [:id])
 
-      %{"id" => non_viewer_message_global_id} =
-        to_response_format(non_viewer_message, :message, [:id])
+      %{"id" => participant_message_global_id} =
+        to_response_format(participant_message, :message, [:id])
 
       expected_response = %{
         "data" => %{
@@ -131,7 +133,7 @@ defmodule CommutoxApiWeb.Graphql.Queries.ChatsTest do
                   "messages" => %{
                     "edges" => [
                       %{"node" => %{"id" => viewer_message_global_id}},
-                      %{"node" => %{"id" => non_viewer_message_global_id}}
+                      %{"node" => %{"id" => participant_message_global_id}}
                     ]
                   }
                 }

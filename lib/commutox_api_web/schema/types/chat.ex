@@ -25,6 +25,20 @@ defmodule CommutoxApiWeb.Schema.Types.Chat do
   end
 
   object :chat_mutations do
+    @desc "Sends a message to a user or a chat"
+    payload field(:send_message) do
+      input do
+        @desc "ID of Chat or User"
+        field :to, non_null(:string)
+        field :text, non_null(:string)
+      end
+
+      output do
+        field :message, :message
+      end
+
+      resolve(&Resolvers.Chat.send_message/2)
+    end
   end
 
   connection(node_type: :chat_member)

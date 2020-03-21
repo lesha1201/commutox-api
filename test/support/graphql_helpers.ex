@@ -47,6 +47,13 @@ defmodule CommutoxApiWeb.GraphqlHelpers do
   end
 
   @doc """
+  Binded Absinthe relay's `from_global_id` to `Schema`
+  """
+  def from_global_id(global_id) do
+    Relay.from_global_id(global_id, Schema)
+  end
+
+  @doc """
   Takes `item` from database response, takes its keys (`keys_to_take`)
   and converts it to relay-graphql response (id -> to opaque global string)
   """

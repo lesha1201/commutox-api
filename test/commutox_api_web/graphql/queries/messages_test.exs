@@ -26,9 +26,13 @@ defmodule CommutoxApiWeb.Graphql.Queries.MessagesTest do
     end
 
     test "`messages` returns only messages from viewer's chats", %{conn: conn, user: viewer} do
-      {:ok, %{chat: chat}} = chat_member_fixture(%{user_id: viewer.id})
+      {:ok, %{user: participant}} = user_fixture()
+      {:ok, %{chat: chat}} = chat_fixture(%{}, [viewer.id, participant.id])
+
       {:ok, %{message: viewer_message}} = message_fixture(%{chat_id: chat.id, user_id: viewer.id})
-      {:ok, %{message: participant_message}} = message_fixture(%{chat_id: chat.id})
+
+      {:ok, %{message: participant_message}} =
+        message_fixture(%{chat_id: chat.id, user_id: participant.id})
 
       query_variables = %{first: 2}
 

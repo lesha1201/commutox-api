@@ -6,7 +6,9 @@ defmodule CommutoxApi.Chats do
   import Ecto.Query, warn: false
   alias CommutoxApi.Repo
 
-  alias CommutoxApi.Chats.Chat
+  alias CommutoxApi.Chats.{Chat, ChatMember, Message}
+  alias CommutoxApi.Chats.Message.CreateMessage
+  alias CommutoxApi.Chats.Chat.CreateChat
 
   @doc """
   Returns the list of chats.
@@ -54,21 +56,41 @@ defmodule CommutoxApi.Chats do
   def get_chat(id), do: Repo.get(Chat, id)
 
   @doc """
-  Creates a chat.
+  Gets a chat that includes only provided users.
+
+  Returns `nil` if the Chat does not exist.
 
   ## Examples
 
-      iex> create_chat(%{field: value})
-      {:ok, %Chat{}}
+      iex> get_chat_by_user_ids([123, 456])
+      %Chat{}
 
-      iex> create_chat(%{field: bad_value})
+      iex> get_chat_by_user_ids([456, 789])
+      nil
+  """
+  def get_chat_by_user_ids(user_ids) do
+    user_ids
+    |> Chat.Query.chat_with_users()
+    |> Repo.one()
+  end
+
+  @doc """
+  Creates a chat or returns an existing chat with provided users.
+
+  ## Examples
+
+      iex> create_chat(%{field: value}, [1, 2])
+      {:ok, %Chat{id: 1}} # Creates
+
+      iex> create_chat(%{field: value}, [1, 2])
+      {:ok, %Chat{id: 1}} # Returns
+
+      iex> create_chat(%{field: bad_value}, [])
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_chat(attrs \\ %{}) do
-    %Chat{}
-    |> Chat.changeset(attrs)
-    |> Repo.insert()
+  def create_chat(attrs \\ %{}, users \\ []) do
+    CreateChat.perform(attrs, users)
   end
 
   @doc """
@@ -117,8 +139,6 @@ defmodule CommutoxApi.Chats do
   def change_chat(%Chat{} = chat) do
     Chat.changeset(chat, %{})
   end
-
-  alias CommutoxApi.Chats.ChatMember
 
   @doc """
   Returns the list of chat_members.
@@ -230,8 +250,6 @@ defmodule CommutoxApi.Chats do
     ChatMember.changeset(chat_member, %{})
   end
 
-  alias CommutoxApi.Chats.Message
-
   @doc """
   Returns the list of messages.
 
@@ -289,10 +307,8 @@ defmodule CommutoxApi.Chats do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_message(attrs \\ %{}) do
-    %Message{}
-    |> Message.changeset(attrs)
-    |> Repo.insert()
+  def create_message(attrs) do
+    CreateMessage.perform(attrs)
   end
 
   @doc """

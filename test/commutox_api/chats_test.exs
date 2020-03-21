@@ -13,16 +13,51 @@ defmodule CommutoxApi.ChatsTest do
 
     test "list_chats/0 returns all chats" do
       {:ok, %{chat: chat}} = chat_fixture()
-      assert Chats.list_chats() == [chat]
+
+      format_chats = fn chats ->
+        Enum.map(chats, &Map.drop(&1, [:users]))
+      end
+
+      chats = Chats.list_chats()
+
+      assert format_chats.(chats) == format_chats.([chat])
     end
 
     test "get_chat!/1 returns the chat with given id" do
       {:ok, %{chat: chat}} = chat_fixture()
-      assert Chats.get_chat!(chat.id) == chat
+
+      chat = Map.drop(chat, [:users])
+      fetched_chat = chat.id |> Chats.get_chat!() |> Map.drop([:users])
+
+      assert fetched_chat == chat
     end
 
     test "create_chat/1 with valid data creates a chat" do
-      assert {:ok, %Chat{} = chat} = Chats.create_chat(@valid_attrs)
+      assert {:ok, %Chat{} = chat} = Chats.create_chat(@valid_attrs, [])
+    end
+
+    test "create_chat/1 with user ids creates a chat and associate users with chat" do
+      {:ok, %{user: first_user}} = user_fixture()
+      {:ok, %{user: second_user}} = user_fixture()
+
+      {:ok, %Chat{} = chat} = Chats.create_chat(@valid_attrs, [first_user.id, second_user.id])
+
+      chat_user_ids = chat |> Map.get(:users) |> Enum.map(&Map.get(&1, :id))
+
+      assert chat_user_ids == [first_user.id, second_user.id]
+    end
+
+    test "create_chat/1 with user ids returns a chat when there is one" do
+      {:ok, %{user: first_user}} = user_fixture()
+      {:ok, %{user: second_user}} = user_fixture()
+
+      {:ok, %Chat{} = first_chat} =
+        Chats.create_chat(@valid_attrs, [first_user.id, second_user.id])
+
+      {:ok, %Chat{} = second_chat} =
+        Chats.create_chat(@valid_attrs, [first_user.id, second_user.id])
+
+      assert first_chat.id == second_chat.id
     end
 
     test "update_chat/2 with valid data updates the chat" do
@@ -136,7 +171,7 @@ defmodule CommutoxApi.ChatsTest do
 
     def get_message_valid_attrs do
       {:ok, %{user: user}} = user_fixture(%{email: "some_new@email"})
-      {:ok, %{chat: chat}} = chat_fixture()
+      {:ok, %{chat: chat}} = chat_fixture(%{}, [user.id])
 
       Map.merge(@valid_scalar_attrs, %{user_id: user.id, chat_id: chat.id})
     end
@@ -171,6 +206,14 @@ defmodule CommutoxApi.ChatsTest do
 
       assert {:error, %Ecto.Changeset{}} =
                Chats.create_message(Map.merge(valid_attrs, %{user_id: nil}))
+    end
+
+    test "create_message/1 with chat user isn't participating in returns error" do
+      valid_attrs = get_message_valid_attrs()
+      {:ok, %{chat: non_user_chat}} = chat_fixture()
+
+      assert {:error, "User isn't in the chat."} =
+               valid_attrs |> Map.merge(%{chat_id: non_user_chat.id}) |> Chats.create_message()
     end
 
     test "update_message/2 with valid data updates the message" do

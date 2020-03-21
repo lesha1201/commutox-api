@@ -18,5 +18,6 @@ defmodule CommutoxApi.Chats.Message do
     message
     |> cast(attrs, [:user_id, :chat_id, :text])
     |> validate_required([:user_id, :chat_id, :text])
+    |> validate_length(:text, min: 1)
   end
 end
