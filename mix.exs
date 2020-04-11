@@ -33,23 +33,23 @@ defmodule CommutoxApi.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.10"},
+      {:phoenix, "~> 1.4.16"},
       {:phoenix_pubsub, "~> 1.1"},
-      {:phoenix_ecto, "~> 4.0"},
-      {:ecto_sql, "~> 3.1"},
+      {:phoenix_ecto, "~> 4.1"},
+      {:ecto_sql, "~> 3.4"},
       {:postgrex, ">= 0.0.0"},
-      {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
+      {:gettext, "~> 0.17"},
+      {:jason, "~> 1.2"},
+      {:plug_cowboy, "~> 2.1"},
       {:absinthe, "~> 1.4"},
       {:absinthe_phoenix, "~> 1.4"},
       {:absinthe_plug, "~> 1.4"},
       {:absinthe_relay, "~> 1.4"},
       {:dataloader, "~> 1.0"},
-      {:argon2_elixir, "~> 2.1"},
-      {:guardian, "~> 2.0"},
+      {:argon2_elixir, "~> 2.3"},
+      {:guardian, "~> 2.1"},
       {:deep_merge, "~> 1.0"},
-      {:credo, "~> 1.2", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.3", only: [:dev, :test], runtime: false}
     ]
   end
 

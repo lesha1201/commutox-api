@@ -36,19 +36,19 @@ defmodule CommutoxApi.AccountsTest do
 
     test "list_users/0 returns all users" do
       {:ok, %{user: user}} = user_fixture()
-      assert Accounts.list_users() == [user]
+      expected_users = [user] |> Enum.map(fn u -> %{u | password: nil} end)
+
+      assert Accounts.list_users() == expected_users
     end
 
     test "get_user!/1 returns the user with given id" do
       {:ok, %{user: user}} = user_fixture()
-      assert Accounts.get_user!(user.id) == user
+      assert Accounts.get_user!(user.id) == %{user | password: nil}
     end
 
     test "create_user/1 with valid data creates a user" do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
-      assert user.email == "some@email"
-      assert user.full_name == "some full_name"
-      assert user.password == nil
+      assert Accounts.get_user!(user.id) == %{user | password: nil}
       assert_raise KeyError, fn -> user.password_confirmation end
     end
 
@@ -63,7 +63,6 @@ defmodule CommutoxApi.AccountsTest do
       assert {:ok, %User{} = user} = Accounts.update_user(user, @update_attrs)
       assert user.email == "some_updated@email"
       assert user.full_name == "some updated full_name"
-      assert user.password == nil
       assert_raise KeyError, fn -> user.password_confirmation end
     end
 
@@ -72,7 +71,7 @@ defmodule CommutoxApi.AccountsTest do
       assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, @invalid_attrs_1)
       assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, @invalid_attrs_2)
       assert {:error, %Ecto.Changeset{}} = Accounts.update_user(user, @invalid_attrs_3)
-      assert user == Accounts.get_user!(user.id)
+      assert Accounts.get_user!(user.id) == %{user | password: nil}
     end
 
     test "delete_user/1 deletes the user" do
