@@ -1,13 +1,24 @@
 defmodule CommutoxApi.Accounts.User do
   use Ecto.Schema
+
   import Ecto.Changeset
+
   alias CommutoxApi.Chats.{Chat, ChatMember, Message}
+  alias CommutoxApi.Accounts.Contact
 
   schema "users" do
     field :email, :string, unique: true
     field :full_name, :string
     field :password_hash, :string
     field :password, :string, virtual: true
+
+    many_to_many :sent_contacts, __MODULE__,
+      join_through: Contact,
+      join_keys: [user_sender_id: :id, user_receiver_id: :id]
+
+    many_to_many :received_contacts, __MODULE__,
+      join_through: Contact,
+      join_keys: [user_receiver_id: :id, user_sender_id: :id]
 
     has_many :messages, Message
     has_many :chat_members, ChatMember

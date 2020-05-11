@@ -1,5 +1,6 @@
 defmodule CommutoxApi.Fixtures do
   alias CommutoxApi.{Accounts, Chats}
+  alias Accounts.ContactStatus
 
   # User
 
@@ -139,6 +140,72 @@ defmodule CommutoxApi.Fixtures do
 
     {:ok, %{message: message, user: user, chat: chat}}
   end
+
+  # Contact status
+
+  def contact_status_fixture(:pending) do
+    {:ok, contact_status} = Accounts.create_contact_status(ContactStatus.Constants.pending())
+
+    {:ok, %{contact_status: contact_status}}
+  end
+
+  def contact_status_fixture(:accepted) do
+    {:ok, contact_status} = Accounts.create_contact_status(ContactStatus.Constants.accepted())
+
+    {:ok, %{contact_status: contact_status}}
+  end
+
+  def contact_status_fixture(:rejected) do
+    {:ok, contact_status} = Accounts.create_contact_status(ContactStatus.Constants.rejected())
+
+    {:ok, %{contact_status: contact_status}}
+  end
+
+  # Contact
+
+  def contact_fixture(type, contact_attrs \\ %{})
+
+  def contact_fixture(:pending, contact_attrs) do
+    pending_status = ContactStatus.Constants.pending()
+
+    contact_attrs
+    |> Map.merge(%{status_code: pending_status.code})
+    |> contact_fixture()
+  end
+
+  def contact_fixture(:accepted, contact_attrs) do
+    accepted_status = ContactStatus.Constants.accepted()
+
+    contact_attrs
+    |> Map.merge(%{status_code: accepted_status.code})
+    |> contact_fixture()
+  end
+
+  def contact_fixture(:rejected, contact_attrs) do
+    rejected_status = ContactStatus.Constants.rejected()
+
+    contact_attrs
+    |> Map.merge(%{status_code: rejected_status.code})
+    |> contact_fixture()
+  end
+
+  def contact_fixture(contact_attrs, _) do
+    {:ok, contact} = Accounts.create_contact(contact_attrs)
+
+    {:ok, %{contact: contact}}
+  end
+
+  def contact_fixture(type, user_sender_attrs, user_receiver_attrs) do
+    {:ok, %{user: user_sender}} = user_fixture(user_sender_attrs)
+    {:ok, %{user: user_receiver}} = user_fixture(user_receiver_attrs)
+
+    {:ok, %{contact: contact}} =
+      contact_fixture(type, %{user_sender_id: user_sender.id, user_receiver_id: user_receiver.id})
+
+    {:ok, %{contact: contact, user_sender: user_sender, user_receiver: user_receiver}}
+  end
+
+  # Utils
 
   defp generate_uuid do
     Ecto.UUID.generate()
