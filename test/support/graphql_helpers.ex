@@ -1,6 +1,5 @@
 defmodule CommutoxApiWeb.GraphqlHelpers do
-  use Phoenix.ConnTest
-
+  import Phoenix.ConnTest
   import Absinthe.Utils
 
   alias Absinthe.Relay.Node, as: Relay

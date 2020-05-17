@@ -10,8 +10,11 @@ defmodule CommutoxApi.Application do
     children = [
       # Start the Ecto repository
       CommutoxApi.Repo,
+      # Start the PubSub system
+      {Phoenix.PubSub, name: CommutoxApi.PubSub},
       # Start the endpoint when the application starts
-      CommutoxApiWeb.Endpoint
+      CommutoxApiWeb.Endpoint,
+      {Absinthe.Subscription, CommutoxApiWeb.Endpoint}
       # Starts a worker by calling: CommutoxApi.Worker.start_link(arg)
       # {CommutoxApi.Worker, arg},
     ]

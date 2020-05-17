@@ -1,5 +1,6 @@
 defmodule CommutoxApiWeb.UserSocket do
   use Phoenix.Socket
+  use Absinthe.Phoenix.Socket, schema: CommutoxApiWeb.Schema
 
   ## Channels
   # channel "room:*", CommutoxApiWeb.RoomChannel

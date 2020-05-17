@@ -15,7 +15,8 @@ config :commutox_api, CommutoxApiWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "6wAF6jxaYsQNwbjOOmu8T47fEyGvnQEAFVHCLwhFWJA3IrmBYy39XftLF0YOoCHS",
   render_errors: [view: CommutoxApiWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: CommutoxApi.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: CommutoxApi.PubSub,
+  live_view: [signing_salt: "S0Sd0Y4/"]
 
 # Configures Guardian
 config :commutox_api, CommutoxApi.Accounts.Guardian,

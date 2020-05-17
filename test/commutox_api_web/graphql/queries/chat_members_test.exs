@@ -62,7 +62,7 @@ defmodule CommutoxApiWeb.Graphql.Queries.ChatMembersTest do
         "errors" => [
           %{
             "extensions" => %{"code" => "UNAUTHORIZED"},
-            "locations" => [%{"column" => 0, "line" => 2}],
+            "locations" => [%{"column" => 5, "line" => 2}],
             "message" => "You should be authorized.",
             "path" => ["chatMembers"]
           }

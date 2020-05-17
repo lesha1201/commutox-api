@@ -51,7 +51,7 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
               "code" => "INVALID_INPUT",
               "details" => %{"text" => ["can't be blank"]}
             },
-            "locations" => [%{"column" => 0, "line" => 2}],
+            "locations" => [%{"column" => 3, "line" => 2}],
             "message" => "Validation error occured.",
             "path" => ["sendMessage"]
           }
@@ -84,7 +84,7 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
               "code" => "INVALID_INPUT",
               "details" => ["Couldn't find a user with such id."]
             },
-            "locations" => [%{"column" => 0, "line" => 2}],
+            "locations" => [%{"column" => 3, "line" => 2}],
             "message" => "Validation error occured.",
             "path" => ["sendMessage"]
           }
@@ -172,7 +172,7 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
               "code" => "INVALID_INPUT",
               "details" => ["Couldn't find a chat with such id."]
             },
-            "locations" => [%{"column" => 0, "line" => 2}],
+            "locations" => [%{"column" => 3, "line" => 2}],
             "message" => "Validation error occured.",
             "path" => ["sendMessage"]
           }
@@ -199,7 +199,7 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
         "data" => %{"sendMessage" => nil},
         "errors" => [
           %{
-            "locations" => [%{"column" => 0, "line" => 2}],
+            "locations" => [%{"column" => 3, "line" => 2}],
             "path" => ["sendMessage"],
             "message" => "User isn't in the chat."
           }
@@ -256,7 +256,7 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
         "errors" => [
           %{
             "extensions" => %{"code" => "UNAUTHORIZED"},
-            "locations" => [%{"column" => 0, "line" => 2}],
+            "locations" => [%{"column" => 3, "line" => 2}],
             "message" => "You should be authorized.",
             "path" => ["sendMessage"]
           }

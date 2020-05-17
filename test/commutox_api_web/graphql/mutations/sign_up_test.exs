@@ -77,7 +77,7 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SignUpTest do
               "passwordConfirmation" => ["does not match confirmation"]
             }
           },
-          "locations" => [%{"column" => 0, "line" => 2}],
+          "locations" => [%{"column" => 3, "line" => 2}],
           "message" => "Validation error occured.",
           "path" => ["signUp"]
         }
