@@ -1,12 +1,13 @@
 defmodule CommutoxApiWeb.Resolvers.Account do
   alias Absinthe.Relay.Connection
   alias CommutoxApi.{Accounts, Repo}
+  alias CommutoxApi.Accounts.{Contact, User}
   alias CommutoxApiWeb.Errors
 
   # Queries
 
   def list_users(args, %{context: %{current_user: _current_user}}) do
-    Accounts.User
+    User
     |> Connection.from_query(&Repo.all/1, args)
   end
 
@@ -19,6 +20,15 @@ defmodule CommutoxApiWeb.Resolvers.Account do
   end
 
   def user(_, _, _) do
+    {:error, Errors.unauthorized()}
+  end
+
+  def list_contacts(args, %{context: %{current_user: current_user}}) do
+    Contact.Query.user_contacts(current_user.id)
+    |> Connection.from_query(&Repo.all/1, args)
+  end
+
+  def list_contacts(_, _) do
     {:error, Errors.unauthorized()}
   end
 

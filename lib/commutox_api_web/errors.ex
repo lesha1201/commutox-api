@@ -50,4 +50,20 @@ defmodule CommutoxApiWeb.Errors do
       extended
     )
   end
+
+  def internal_error do
+    %{
+      message: "Something went wrong.",
+      extensions: %{
+        code: "INTERNAL"
+      }
+    }
+  end
+
+  def internal_error(%{} = extended) do
+    DeepMerge.deep_merge(
+      internal_error(),
+      extended
+    )
+  end
 end

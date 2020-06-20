@@ -233,6 +233,22 @@ defmodule CommutoxApi.Accounts do
   def get_contact!(id), do: Repo.get!(Contact, id)
 
   @doc """
+  Gets a single contact.
+
+  Returns `nil` if the Contact does not exist.
+
+  ## Examples
+
+      iex> get_contact(123)
+      %Contact{}
+
+      iex> get_contact(456)
+      nil
+
+  """
+  def get_contact(id), do: Repo.get(Contact, id)
+
+  @doc """
   Creates a contact.
 
   ## Examples

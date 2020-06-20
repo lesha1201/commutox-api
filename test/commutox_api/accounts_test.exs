@@ -5,12 +5,6 @@ defmodule CommutoxApi.AccountsTest do
 
   alias CommutoxApi.Accounts
 
-  def seed_contact_statuses(_) do
-    {:ok, %{contact_status: _pending_contact_status}} = contact_status_fixture(:pending)
-    {:ok, %{contact_status: _accepted_contact_status}} = contact_status_fixture(:accepted)
-    {:ok, %{contact_status: _rejected_contact_status}} = contact_status_fixture(:rejected)
-  end
-
   describe "users" do
     alias CommutoxApi.Accounts.User
 
@@ -121,7 +115,9 @@ defmodule CommutoxApi.AccountsTest do
   describe "contacts" do
     alias CommutoxApi.Accounts.{Contact, ContactStatus}
 
-    setup [:seed_contact_statuses]
+    setup _context do
+      seed_contact_statuses()
+    end
 
     @update_attrs %{
       status_code: "ACC"

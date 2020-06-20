@@ -4,7 +4,6 @@ defmodule CommutoxApiWeb.Resolvers.Chat do
   alias Absinthe.Relay.{Connection, Node}
   alias CommutoxApi.{Repo}
   alias CommutoxApi.Accounts
-  alias CommutoxApi.Accounts.{User}
   alias CommutoxApi.Chats
   alias CommutoxApi.Chats.{Chat, ChatMember, Message}
   alias CommutoxApiWeb.Errors
@@ -12,14 +11,7 @@ defmodule CommutoxApiWeb.Resolvers.Chat do
   # Queries
 
   def list_chats(args, %{context: %{current_user: current_user}}) do
-    from(c in Chat,
-      join: cm in ChatMember,
-      on: cm.chat_id == c.id,
-      join: u in User,
-      on: cm.user_id == u.id,
-      select: c,
-      where: u.id == ^current_user.id
-    )
+    Chat.Query.user_chats(current_user.id)
     |> Connection.from_query(&Repo.all/1, args)
   end
 
@@ -28,12 +20,7 @@ defmodule CommutoxApiWeb.Resolvers.Chat do
   end
 
   def list_chat_members(args, %{context: %{current_user: current_user}}) do
-    from(cm in ChatMember,
-      join: u in User,
-      on: u.id == cm.user_id,
-      select: cm,
-      where: u.id == ^current_user.id
-    )
+    ChatMember.Query.user_chat_members(current_user.id)
     |> Connection.from_query(&Repo.all/1, args)
   end
 
@@ -42,15 +29,7 @@ defmodule CommutoxApiWeb.Resolvers.Chat do
   end
 
   def list_messages(args, %{context: %{current_user: current_user}}) do
-    from(m in Message,
-      join: cm in ChatMember,
-      on: cm.chat_id == m.chat_id,
-      join: u in User,
-      on: u.id == cm.user_id,
-      select: m,
-      where: u.id == ^current_user.id or m.user_id == ^current_user.id,
-      group_by: m.id
-    )
+    Message.Query.user_visible_messages(current_user.id)
     |> Connection.from_query(&Repo.all/1, args)
   end
 

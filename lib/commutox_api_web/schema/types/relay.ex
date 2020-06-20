@@ -16,6 +16,22 @@ defmodule CommutoxApiWeb.Schema.Types.Relay do
         %{type: :user, id: _id}, _ ->
           {:error, Errors.unauthorized()}
 
+        # Contacts
+
+        %{type: :contact, id: id}, %{context: %{current_user: current_user}} ->
+          contact = Accounts.get_contact(id) |> Repo.preload([:user_sender, :user_receiver])
+
+          if Enum.any?([contact.user_sender.id, contact.user_receiver.id], fn id ->
+               id == current_user.id
+             end) do
+            {:ok, contact}
+          else
+            {:error, Errors.forbidden(%{message: "You can't view this contact."})}
+          end
+
+        %{type: :contact, id: _id}, _ ->
+          {:error, Errors.unauthorized()}
+
         # Chat member
 
         %{type: :chat_member, id: id}, %{context: %{current_user: current_user}} ->
@@ -73,6 +89,9 @@ defmodule CommutoxApiWeb.Schema.Types.Relay do
     resolve_type(fn
       %Accounts.User{}, _ ->
         :user
+
+      %Accounts.Contact{}, _ ->
+        :contact
 
       %Chats.ChatMember{}, _ ->
         :chat_member
