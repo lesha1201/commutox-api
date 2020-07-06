@@ -202,5 +202,79 @@ defmodule CommutoxApi.AccountsTest do
 
       assert %Ecto.Changeset{} = Accounts.change_contact(contact)
     end
+
+    test "add_contact/1 creates a new contact when it doesn't exist" do
+      {:ok, %{user: %{id: current_user_id} = current_user}} = user_fixture()
+      {:ok, %{user: %{id: contact_user_id} = contact_user}} = user_fixture()
+
+      pending_status_code = ContactStatus.Constants.pending().code
+
+      assert Accounts.get_contact_by(
+               user_sender_id: current_user.id,
+               user_receiver_id: contact_user.id
+             ) == nil
+
+      assert Accounts.get_contact_by(
+               user_sender_id: contact_user.id,
+               user_receiver_id: current_user.id
+             ) == nil
+
+      assert {:ok,
+              %Contact{
+                user_sender_id: ^current_user_id,
+                user_receiver_id: ^contact_user_id,
+                status_code: ^pending_status_code
+              }} = Accounts.add_contact(%{current_user: current_user, contact_user: contact_user})
+    end
+
+    test "add_contact/1 updates an existing contact when the current user is receiver" do
+      {:ok, %{user: %{id: current_user_id} = current_user}} = user_fixture()
+      {:ok, %{user: %{id: contact_user_id} = contact_user}} = user_fixture()
+
+      {:ok, %{contact: %{id: existing_contact_id}}} =
+        contact_fixture(:pending, %{
+          user_sender_id: contact_user_id,
+          user_receiver_id: current_user_id
+        })
+
+      accepted_status_code = ContactStatus.Constants.accepted().code
+
+      assert {:ok,
+              %Contact{
+                id: ^existing_contact_id,
+                user_sender_id: ^contact_user_id,
+                user_receiver_id: ^current_user_id,
+                status_code: ^accepted_status_code
+              } = contact} =
+               Accounts.add_contact(%{current_user: current_user, contact_user: contact_user})
+    end
+
+    test "add_contact/1 returns error when contact_user is the current user" do
+      {:ok, %{user: current_user}} = user_fixture()
+
+      assert {:error, "Contact user can't be the current user."} =
+               Accounts.add_contact(%{current_user: current_user, contact_user: current_user})
+    end
+
+    test "add_contact/1 returns error when the current user already created such contact" do
+      {:ok, %{user: %{id: current_user_id} = current_user}} = user_fixture()
+      {:ok, %{user: %{id: contact_user_id} = contact_user}} = user_fixture()
+
+      {:ok, %{contact: _contact}} =
+        contact_fixture(:pending, %{
+          user_sender_id: current_user_id,
+          user_receiver_id: contact_user_id
+        })
+
+      assert {:error, "You already have such contact."} =
+               Accounts.add_contact(%{current_user: current_user, contact_user: contact_user})
+    end
+
+    test "add_contact/1 returns error when arguments are invalid" do
+      {:ok, %{user: current_user}} = user_fixture()
+
+      assert {:error, "You must provide either id or email of contact user."} =
+               Accounts.add_contact(%{current_user: current_user, contact_user: %{}})
+    end
   end
 end

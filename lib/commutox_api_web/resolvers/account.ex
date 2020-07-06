@@ -56,4 +56,26 @@ defmodule CommutoxApiWeb.Resolvers.Account do
       :error -> {:error, "Can't sign in a user."}
     end
   end
+
+  def add_contact(args, %{context: %{current_user: current_user}}) do
+    case Accounts.add_contact(%{
+           current_user: current_user,
+           contact_user: %{id: Map.get(args, :user_id), email: Map.get(args, :user_email)}
+         }) do
+      {:ok, contact} ->
+        {:ok, %{contact: contact}}
+
+      {:error, error} ->
+        {:error,
+         Errors.invalid_input(%{
+           extensions: %{
+             details: [error]
+           }
+         })}
+    end
+  end
+
+  def add_contact(_, _) do
+    {:error, Errors.unauthorized()}
+  end
 end

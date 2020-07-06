@@ -161,7 +161,7 @@ defmodule CommutoxApi.Fixtures do
     {:ok, %{contact_status: contact_status}}
   end
 
-  def seed_contact_statuses() do
+  def seed_contact_statuses do
     {:ok, %{contact_status: _pending_contact_status}} = contact_status_fixture(:pending)
     {:ok, %{contact_status: _accepted_contact_status}} = contact_status_fixture(:accepted)
     {:ok, %{contact_status: _rejected_contact_status}} = contact_status_fixture(:rejected)

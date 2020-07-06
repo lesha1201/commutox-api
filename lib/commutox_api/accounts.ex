@@ -8,6 +8,7 @@ defmodule CommutoxApi.Accounts do
 
   alias CommutoxApi.Accounts.User
   alias CommutoxApi.Accounts.Contact
+  alias CommutoxApi.Accounts.Contact.AddContact
   alias CommutoxApi.Accounts.ContactStatus
 
   @doc """
@@ -56,7 +57,7 @@ defmodule CommutoxApi.Accounts do
   def get_user(id), do: Repo.get(User, id)
 
   @doc """
-  Gets a single user by email.
+  Gets a single user by some clauses.
 
   Returns `nil` if the User does not exist.
   """
@@ -249,6 +250,13 @@ defmodule CommutoxApi.Accounts do
   def get_contact(id), do: Repo.get(Contact, id)
 
   @doc """
+  Gets a single contact by some clauses.
+
+  Returns `nil` if the Contact does not exist.
+  """
+  def get_contact_by(clauses), do: Repo.get_by(Contact, clauses)
+
+  @doc """
   Creates a contact.
 
   ## Examples
@@ -264,6 +272,22 @@ defmodule CommutoxApi.Accounts do
     %Contact{}
     |> Contact.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Adds contact for the current user. If the current user already received a request from
+  `contact_user` then it updates the contact status to Accepted.
+
+  ## Examples
+
+      iex> add_contact(%{current_user: current_user, contact_user: some_user})
+      {:ok, %Contact{}}
+
+      iex> add_contact(%{current_user: current_user, contact_user: current_user})
+      {:error, "ERROR"}
+  """
+  def add_contact(%{current_user: _current_user, contact_user: _contact_user} = attrs) do
+    AddContact.perform(attrs)
   end
 
   @doc """
