@@ -71,10 +71,9 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
         field :password_confirmation, non_null(:string)
       end
 
-      # TODO: :token, :user should be non null
       output do
-        field :token, :string
-        field :user, :user
+        field :token, non_null(:string)
+        field :user, non_null(:user)
       end
 
       resolve(&Resolvers.Account.sign_up/2)
@@ -87,10 +86,9 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
         field :password, non_null(:string)
       end
 
-      # TODO: :token, :user should be non null
       output do
-        field :token, :string
-        field :user, :user
+        field :token, non_null(:string)
+        field :user, non_null(:user)
       end
 
       resolve(&Resolvers.Account.sign_in/2)
