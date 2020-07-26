@@ -67,7 +67,8 @@ defmodule CommutoxApiWeb.Schema.Types.Contact do
         field :contact, non_null(:contact)
       end
 
-      resolve(&Resolvers.Contact.add_contact/2)
+      parsing_node_ids(&Resolvers.Contact.add_contact/2, user_id: :user)
+      |> resolve()
     end
 
     @desc """
@@ -84,7 +85,8 @@ defmodule CommutoxApiWeb.Schema.Types.Contact do
         field :success, non_null(:boolean)
       end
 
-      resolve(&Resolvers.Contact.remove_contact/2)
+      parsing_node_ids(&Resolvers.Contact.remove_contact/2, id: :contact)
+      |> resolve()
     end
   end
 

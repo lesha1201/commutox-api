@@ -57,13 +57,43 @@ defmodule CommutoxApiWeb.Resolvers.Contact do
     {:error, Errors.unauthenticated()}
   end
 
+  @remove_contact_input_errors [:not_owner, :no_contact, :contact_is_incoming_request]
+
+  @remove_contact_errors %{
+    no_contact: "Couldn't find such contact.",
+    not_owner: "Contact doesn't belong to you.",
+    contact_is_incoming_request: "You can't remove pending or rejected incoming requests."
+  }
+
+  def remove_contact(args, %{context: %{current_user: current_user}}) do
+    case Contacts.remove_contact(current_user, %{id: Map.get(args, :id)}) do
+      {:ok, _contact} ->
+        {:ok, %{success: true}}
+
+      {:error, error} when error in @remove_contact_input_errors ->
+        {:error,
+         Errors.invalid_input(%{
+           extensions: %{
+             details: [transform_domain_error(:remove_contact, error)]
+           }
+         })}
+
+      {:error, _error} ->
+        {:error, Errors.internal_error()}
+    end
+  end
+
   def remove_contact(_, _) do
-    {:error, "Not implemented"}
+    {:error, Errors.unauthenticated()}
   end
 
   # Utils
 
   defp transform_domain_error(:add_contact, error_type) do
     Map.get(@add_contact_errors, error_type)
+  end
+
+  defp transform_domain_error(:remove_contact, error_type) do
+    Map.get(@remove_contact_errors, error_type)
   end
 end

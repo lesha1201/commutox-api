@@ -30,7 +30,28 @@ defmodule CommutoxApiWeb.Graphql.Mutations.AddContactTest do
   describe "when user is authorized" do
     setup [:authenticate_user]
 
-    test "`addContact` returns contact when mutation is successfull", %{conn: conn} do
+    test "`addContact` adds contact by user id", %{conn: conn} do
+      {:ok, %{user: contact_user}} = user_fixture()
+      contact_user_email = contact_user.email
+      contact_user_id = contact_user.id
+
+      query_variables = %{
+        input: %{
+          user_id: to_global_id(:user, contact_user_id)
+        }
+      }
+
+      %{resp_decoded: resp_decoded} =
+        graphql_query(conn, query: @add_contact_mutation, variables: query_variables)
+
+      assert %{
+               "data" => %{
+                 "addContact" => %{"contact" => %{"user" => %{"email" => ^contact_user_email}}}
+               }
+             } = resp_decoded
+    end
+
+    test "`addContact` adds contact by user email", %{conn: conn} do
       {:ok, %{user: contact_user}} = user_fixture()
       contact_user_email = contact_user.email
 

@@ -4,7 +4,7 @@ defmodule CommutoxApi.Contacts do
   """
 
   alias CommutoxApi.Contacts.Contact
-  alias CommutoxApi.Contacts.Domain.{AddContact, ListUserContacts}
+  alias CommutoxApi.Contacts.Domain.{AddContact, ListUserContacts, RemoveContact}
 
   @doc """
   Returns the `user`'s contacts in Relay representation.
@@ -44,5 +44,23 @@ defmodule CommutoxApi.Contacts do
           | {:error, :ecto_changeset, Ecto.Changeset.t()}
   def add_contact(actor_user, contact_user) do
     AddContact.perform(actor_user, contact_user)
+  end
+
+  @doc """
+  Removes a contact from the `actor_user`. If the `actor_user` is sender it will delete
+  the contact from DB otherwise it will update the contact status to `REJ`.
+
+  ## Examples
+
+      iex> remove_contact(actor_user, contact)
+      {:ok, %Contact{}}
+
+      iex> remove_contact(actor_user, contact)
+      {:error, :no_contact}
+  """
+  @spec remove_contact(RemoveContact.actor_user(), RemoveContact.contact()) ::
+          RemoveContact.result()
+  def remove_contact(actor_user, contact) do
+    RemoveContact.perform(actor_user, contact)
   end
 end
