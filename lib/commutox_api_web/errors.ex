@@ -3,6 +3,14 @@ defmodule CommutoxApiWeb.Errors do
   A module providing common errors returned by API.
   """
 
+  @type t :: %{
+          message: String.t(),
+          extensions: %{
+            code: String.t()
+          }
+        }
+
+  @spec invalid_input :: t
   def invalid_input do
     %{
       message: "Validation error occured.",
@@ -12,6 +20,7 @@ defmodule CommutoxApiWeb.Errors do
     }
   end
 
+  @spec invalid_input(map) :: t
   def invalid_input(%{} = extended) do
     DeepMerge.deep_merge(
       invalid_input(),
@@ -19,22 +28,25 @@ defmodule CommutoxApiWeb.Errors do
     )
   end
 
-  def unauthorized do
+  @spec unauthenticated :: t
+  def unauthenticated do
     %{
-      message: "You should be authorized.",
+      message: "You must be authenticated.",
       extensions: %{
-        code: "UNAUTHORIZED"
+        code: "UNAUTHENTICATED"
       }
     }
   end
 
-  def unauthorized(%{} = extended) do
+  @spec unauthenticated(map) :: t
+  def unauthenticated(%{} = extended) do
     DeepMerge.deep_merge(
-      unauthorized(),
+      unauthenticated(),
       extended
     )
   end
 
+  @spec forbidden :: t
   def forbidden do
     %{
       message: "You don't have permissions to view it.",
@@ -44,6 +56,7 @@ defmodule CommutoxApiWeb.Errors do
     }
   end
 
+  @spec forbidden(map) :: t
   def forbidden(%{} = extended) do
     DeepMerge.deep_merge(
       forbidden(),
@@ -51,6 +64,7 @@ defmodule CommutoxApiWeb.Errors do
     )
   end
 
+  @spec internal_error :: t
   def internal_error do
     %{
       message: "Something went wrong.",
@@ -60,6 +74,7 @@ defmodule CommutoxApiWeb.Errors do
     }
   end
 
+  @spec internal_error(map) :: t
   def internal_error(%{} = extended) do
     DeepMerge.deep_merge(
       internal_error(),

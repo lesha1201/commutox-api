@@ -72,4 +72,24 @@ defmodule CommutoxUtils.MapTest do
       assert to_camel_case(list_of_maps) == expected_result
     end
   end
+
+  describe "get_one_of/2" do
+    test "it should return {key, value} tuple for the first available key" do
+      assert get_one_of(%{b: 2}, [:a, :b]) == {:b, 2}
+      assert get_one_of(%{a: 1, b: 2}, [:a, :b]) == {:a, 1}
+      assert get_one_of(%{b: 2, a: 1}, [:a, :b]) == {:a, 1}
+    end
+
+    test "it should return result only for non-nil values" do
+      map = %{a: nil, b: 2}
+
+      assert get_one_of(map, [:a, :b]) == {:b, 2}
+    end
+
+    test "it should return `nil` when no result" do
+      assert get_one_of(%{}, []) == nil
+      assert get_one_of(%{}, [:a]) == nil
+      assert get_one_of(%{a: nil}, [:a]) == nil
+    end
+  end
 end

@@ -68,7 +68,8 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SignInTest do
         %{
           "locations" => [%{"column" => 3, "line" => 2}],
           "message" => "Invalid credentials.",
-          "path" => ["signIn"]
+          "path" => ["signIn"],
+          "extensions" => %{"code" => "INVALID_INPUT"}
         }
       ]
     }
@@ -102,7 +103,8 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SignInTest do
         %{
           "locations" => [%{"column" => 3, "line" => 2}],
           "message" => "Invalid credentials.",
-          "path" => ["signIn"]
+          "path" => ["signIn"],
+          "extensions" => %{"code" => "INVALID_INPUT"}
         }
       ]
     }

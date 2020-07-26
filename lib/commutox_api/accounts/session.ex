@@ -1,12 +1,14 @@
 defmodule CommutoxApi.Accounts.Session do
   alias CommutoxApi.Accounts
 
+  @spec authenticate(%{email: String.t(), password: String.t()}) ::
+          {:error, :invalid_credentials} | {:ok, Accounts.User.t()}
   def authenticate(args) do
-    user = Accounts.get_user_by(email: String.downcase(args.email))
+    user = Accounts.Store.get_user_by(email: String.downcase(args.email))
 
     case check_password(user, args) do
       true -> {:ok, user}
-      _ -> {:error, "Invalid credentials."}
+      _ -> {:error, :invalid_credentials}
     end
   end
 

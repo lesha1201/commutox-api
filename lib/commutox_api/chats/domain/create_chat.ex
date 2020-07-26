@@ -1,21 +1,20 @@
-defmodule CommutoxApi.Chats.Chat.CreateChat do
-  @moduledoc """
-  Contains business logic for creating a chat.
-  """
+defmodule CommutoxApi.Chats.Domain.CreateChat do
+  @moduledoc false
 
   import Ecto.Query, warn: false
 
   alias Ecto.Multi
   alias CommutoxApi.Repo
   alias CommutoxApi.Accounts.User
+  alias CommutoxApi.Chats
   alias CommutoxApi.Chats.Chat
+  alias CommutoxApi.Types, as: T
 
-  @doc """
-  Checks if there is a chat with `user_ids`.
-  If there is then it returns otherwise creates a new one
-  """
+  @type result :: {:ok, Chat.t()} | {:error, Ecto.Changeset.t()} | {:error, :unknown}
+
+  @spec perform(map, list(T.id())) :: result
   def perform(attrs, user_ids \\ []) do
-    case Repo.one(Chat.Query.chat_with_users(user_ids)) do
+    case Repo.one(Chats.Query.chat_with_users(user_ids)) do
       nil ->
         create_chat(attrs, user_ids)
 
@@ -41,7 +40,7 @@ defmodule CommutoxApi.Chats.Chat.CreateChat do
         {:error, changeset}
 
       _ ->
-        {:error, "Something went wrong."}
+        {:error, :unknown}
     end
   end
 end

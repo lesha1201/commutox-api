@@ -3,8 +3,24 @@ defmodule CommutoxApi.Accounts.User do
 
   import Ecto.Changeset
 
+  alias CommutoxApi.Types, as: T
   alias CommutoxApi.Chats.{Chat, ChatMember, Message}
-  alias CommutoxApi.Accounts.Contact
+  alias CommutoxApi.Contacts.Contact
+
+  @type t :: %__MODULE__{
+          id: T.id() | nil,
+          email: String.t() | nil,
+          full_name: String.t() | nil,
+          password_hash: String.t() | nil,
+          password: String.t() | nil,
+          sent_contacts: Ecto.Schema.many_to_many(Contact.t()),
+          received_contacts: Ecto.Schema.many_to_many(Contact.t()),
+          messages: Ecto.Schema.has_many(Message.t()),
+          chat_members: Ecto.Schema.has_many(ChatMember.t()),
+          chats: Ecto.Schema.many_to_many(Chat.t()),
+          inserted_at: NaiveDateTime.t() | nil,
+          updated_at: NaiveDateTime.t() | nil
+        }
 
   schema "users" do
     field :email, :string, unique: true
@@ -27,11 +43,14 @@ defmodule CommutoxApi.Accounts.User do
     timestamps()
   end
 
+  @fields [:full_name, :email, :password]
+
   @doc false
+  @spec changeset(t, map) :: Ecto.Changeset.t()
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:full_name, :email, :password])
-    |> validate_required([:full_name, :email, :password])
+    |> cast(attrs, @fields)
+    |> validate_required(@fields)
     |> validate_format(:email, ~r/^\S+@\S+$/)
     |> update_change(:email, &String.downcase(&1))
     |> validate_length(:password, min: 8, max: 64)

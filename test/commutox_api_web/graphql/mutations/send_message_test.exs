@@ -82,7 +82,7 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
           %{
             "extensions" => %{
               "code" => "INVALID_INPUT",
-              "details" => ["Couldn't find a user with such id."]
+              "details" => ["Couldn't find a receiver user with such id."]
             },
             "locations" => [%{"column" => 3, "line" => 2}],
             "message" => "Validation error occured.",
@@ -100,7 +100,7 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
     } do
       {:ok, %{user: receiver}} = user_fixture()
 
-      assert length(Chats.list_chats()) == 0
+      assert Chats.Store.list_chats() == []
 
       query_variables = %{
         input: %{
@@ -122,9 +122,9 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
 
       {:ok, %{id: resp_message_id}} = from_global_id(resp_message["id"])
 
-      assert %Message{} = Chats.get_message(resp_message_id)
+      assert %Message{} = Chats.Store.get_message(resp_message_id)
 
-      chats = Chats.list_chats()
+      chats = Chats.Store.list_chats()
       chat = chats |> List.first() |> Repo.preload([:users])
 
       chat_user_ids = chat.users |> Enum.map(&Map.get(&1, :id)) |> Enum.sort()
@@ -145,8 +145,8 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
 
       {:ok, %{id: resp_message_id}} = from_global_id(resp_message["id"])
 
-      assert %Message{} = Chats.get_message(resp_message_id)
-      assert length(Chats.list_chats()) == 1
+      assert %Message{} = Chats.Store.get_message(resp_message_id)
+      assert length(Chats.Store.list_chats()) == 1
     end
   end
 
@@ -170,7 +170,7 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
           %{
             "extensions" => %{
               "code" => "INVALID_INPUT",
-              "details" => ["Couldn't find a chat with such id."]
+              "details" => ["Couldn't find such chat."]
             },
             "locations" => [%{"column" => 3, "line" => 2}],
             "message" => "Validation error occured.",
@@ -201,7 +201,8 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
           %{
             "locations" => [%{"column" => 3, "line" => 2}],
             "path" => ["sendMessage"],
-            "message" => "User isn't in the chat."
+            "message" => "Validation error occured.",
+            "extensions" => %{"code" => "INVALID_INPUT", "details" => ["User isn't in the chat."]}
           }
         ]
       }
@@ -232,8 +233,8 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
 
       {:ok, %{id: resp_message_id}} = from_global_id(resp_message["id"])
 
-      assert %Message{} = Chats.get_message(resp_message_id)
-      assert length(Chats.list_chats()) == 1
+      assert %Message{} = Chats.Store.get_message(resp_message_id)
+      assert length(Chats.Store.list_chats()) == 1
     end
   end
 
@@ -255,9 +256,9 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SendMessageTest do
         "data" => %{"sendMessage" => nil},
         "errors" => [
           %{
-            "extensions" => %{"code" => "UNAUTHORIZED"},
+            "extensions" => %{"code" => "UNAUTHENTICATED"},
             "locations" => [%{"column" => 3, "line" => 2}],
-            "message" => "You should be authorized.",
+            "message" => "You must be authenticated.",
             "path" => ["sendMessage"]
           }
         ]

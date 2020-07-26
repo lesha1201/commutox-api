@@ -6,5 +6,6 @@ defmodule CommutoxApiWeb.Schema.Types do
   import_types(Absinthe.Type.Custom)
   import_types(Types.Account)
   import_types(Types.Chat)
+  import_types(Types.Contact)
   import_types(Types.Relay)
 end

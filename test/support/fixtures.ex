@@ -1,6 +1,5 @@
 defmodule CommutoxApi.Fixtures do
-  alias CommutoxApi.{Accounts, Chats}
-  alias Accounts.ContactStatus
+  alias CommutoxApi.{Accounts, Chats, Contacts}
 
   # User
 
@@ -21,7 +20,7 @@ defmodule CommutoxApi.Fixtures do
     {:ok, user} =
       attrs
       |> Enum.into(user_valid_attrs)
-      |> Accounts.create_user()
+      |> Accounts.Store.create_user()
 
     {:ok, %{user: user}}
   end
@@ -36,7 +35,7 @@ defmodule CommutoxApi.Fixtures do
     {:ok, chat_member} =
       @chat_member_valid_attrs
       |> Map.merge(chat_member_attrs)
-      |> Chats.create_chat_member()
+      |> Chats.Store.create_chat_member()
 
     {:ok, %{chat_member: chat_member}}
   end
@@ -100,7 +99,7 @@ defmodule CommutoxApi.Fixtures do
     {:ok, message} =
       @message_valid_attrs
       |> Map.merge(message_attrs)
-      |> Chats.create_message()
+      |> Chats.Store.create_message()
 
     {:ok, %{message: message}}
   end
@@ -144,19 +143,19 @@ defmodule CommutoxApi.Fixtures do
   # Contact status
 
   def contact_status_fixture(:pending) do
-    {:ok, contact_status} = Accounts.create_contact_status(ContactStatus.Constants.pending())
+    {:ok, contact_status} = Contacts.Store.create_contact_status(Contacts.Constants.pending())
 
     {:ok, %{contact_status: contact_status}}
   end
 
   def contact_status_fixture(:accepted) do
-    {:ok, contact_status} = Accounts.create_contact_status(ContactStatus.Constants.accepted())
+    {:ok, contact_status} = Contacts.Store.create_contact_status(Contacts.Constants.accepted())
 
     {:ok, %{contact_status: contact_status}}
   end
 
   def contact_status_fixture(:rejected) do
-    {:ok, contact_status} = Accounts.create_contact_status(ContactStatus.Constants.rejected())
+    {:ok, contact_status} = Contacts.Store.create_contact_status(Contacts.Constants.rejected())
 
     {:ok, %{contact_status: contact_status}}
   end
@@ -174,7 +173,7 @@ defmodule CommutoxApi.Fixtures do
   def contact_fixture(type, contact_attrs \\ %{})
 
   def contact_fixture(:pending, contact_attrs) do
-    pending_status = ContactStatus.Constants.pending()
+    pending_status = Contacts.Constants.pending()
 
     contact_attrs
     |> Map.merge(%{status_code: pending_status.code})
@@ -182,7 +181,7 @@ defmodule CommutoxApi.Fixtures do
   end
 
   def contact_fixture(:accepted, contact_attrs) do
-    accepted_status = ContactStatus.Constants.accepted()
+    accepted_status = Contacts.Constants.accepted()
 
     contact_attrs
     |> Map.merge(%{status_code: accepted_status.code})
@@ -190,7 +189,7 @@ defmodule CommutoxApi.Fixtures do
   end
 
   def contact_fixture(:rejected, contact_attrs) do
-    rejected_status = ContactStatus.Constants.rejected()
+    rejected_status = Contacts.Constants.rejected()
 
     contact_attrs
     |> Map.merge(%{status_code: rejected_status.code})
@@ -198,7 +197,7 @@ defmodule CommutoxApi.Fixtures do
   end
 
   def contact_fixture(contact_attrs, _) do
-    {:ok, contact} = Accounts.create_contact(contact_attrs)
+    {:ok, contact} = Contacts.Store.create_contact(contact_attrs)
 
     {:ok, %{contact: contact}}
   end

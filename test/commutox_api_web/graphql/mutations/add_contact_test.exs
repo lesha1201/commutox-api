@@ -160,9 +160,9 @@ defmodule CommutoxApiWeb.Graphql.Mutations.AddContactTest do
         "data" => %{"addContact" => nil},
         "errors" => [
           %{
-            "extensions" => %{"code" => "UNAUTHORIZED"},
+            "extensions" => %{"code" => "UNAUTHENTICATED"},
             "locations" => [%{"column" => 3, "line" => 2}],
-            "message" => "You should be authorized.",
+            "message" => "You must be authenticated.",
             "path" => ["addContact"]
           }
         ]

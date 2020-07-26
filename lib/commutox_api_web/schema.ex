@@ -8,11 +8,13 @@ defmodule CommutoxApiWeb.Schema do
     import_fields(:relay_queries)
     import_fields(:account_queries)
     import_fields(:chat_queries)
+    import_fields(:contact_queries)
   end
 
   mutation do
     import_fields(:account_mutations)
     import_fields(:chat_mutations)
+    import_fields(:contact_mutations)
   end
 
   def plugins do

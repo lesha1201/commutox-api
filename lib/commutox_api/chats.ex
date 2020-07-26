@@ -3,76 +3,16 @@ defmodule CommutoxApi.Chats do
   The Chats context.
   """
 
-  import Ecto.Query, warn: false
-  alias CommutoxApi.Repo
+  alias CommutoxApi.Chats.Domain.{
+    CreateChat,
+    SendMessage,
+    SendMessageToUser,
+    ListUserChatMembers,
+    ListUserChats,
+    ListUserMessages
+  }
 
-  alias CommutoxApi.Chats.{Chat, ChatMember, Message}
-  alias CommutoxApi.Chats.Message.CreateMessage
-  alias CommutoxApi.Chats.Chat.CreateChat
-
-  @doc """
-  Returns the list of chats.
-
-  ## Examples
-
-      iex> list_chats()
-      [%Chat{}, ...]
-
-  """
-  def list_chats do
-    Repo.all(Chat)
-  end
-
-  @doc """
-  Gets a single chat.
-
-  Raises `Ecto.NoResultsError` if the Chat does not exist.
-
-  ## Examples
-
-      iex> get_chat!(123)
-      %Chat{}
-
-      iex> get_chat!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_chat!(id), do: Repo.get!(Chat, id)
-
-  @doc """
-  Gets a single chat.
-
-  Returns `nil` if the Chat does not exist.
-
-  ## Examples
-
-      iex> get_chat(123)
-      %Chat{}
-
-      iex> get_chat(456)
-      nil
-
-  """
-  def get_chat(id), do: Repo.get(Chat, id)
-
-  @doc """
-  Gets a chat that includes only provided users.
-
-  Returns `nil` if the Chat does not exist.
-
-  ## Examples
-
-      iex> get_chat_by_user_ids([123, 456])
-      %Chat{}
-
-      iex> get_chat_by_user_ids([456, 789])
-      nil
-  """
-  def get_chat_by_user_ids(user_ids) do
-    user_ids
-    |> Chat.Query.chat_with_users()
-    |> Repo.one()
-  end
+  alias CommutoxApi.Types, as: T
 
   @doc """
   Creates a chat or returns an existing chat with provided users.
@@ -89,272 +29,104 @@ defmodule CommutoxApi.Chats do
       {:error, %Ecto.Changeset{}}
 
   """
+  @spec create_chat(map, list(T.id())) :: CreateChat.result()
   def create_chat(attrs \\ %{}, users \\ []) do
     CreateChat.perform(attrs, users)
   end
 
   @doc """
-  Updates a chat.
+  Sends a message to a chat. Validates that the sender user is in the chat.
 
   ## Examples
 
-      iex> update_chat(chat, %{field: new_value})
-      {:ok, %Chat{}}
-
-      iex> update_chat(chat, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_chat(%Chat{} = chat, attrs) do
-    chat
-    |> Chat.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a Chat.
-
-  ## Examples
-
-      iex> delete_chat(chat)
-      {:ok, %Chat{}}
-
-      iex> delete_chat(chat)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_chat(%Chat{} = chat) do
-    Repo.delete(chat)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking chat changes.
-
-  ## Examples
-
-      iex> change_chat(chat)
-      %Ecto.Changeset{source: %Chat{}}
-
-  """
-  def change_chat(%Chat{} = chat) do
-    Chat.changeset(chat, %{})
-  end
-
-  @doc """
-  Returns the list of chat_members.
-
-  ## Examples
-
-      iex> list_chat_members()
-      [%ChatMember{}, ...]
-
-  """
-  def list_chat_members do
-    Repo.all(ChatMember)
-  end
-
-  @doc """
-  Gets a single chat_member.
-
-  Raises `Ecto.NoResultsError` if the Chat member does not exist.
-
-  ## Examples
-
-      iex> get_chat_member!(123)
-      %ChatMember{}
-
-      iex> get_chat_member!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_chat_member!(id), do: Repo.get!(ChatMember, id)
-
-  @doc """
-  Gets a single chat_member
-
-  Returns `nil` if the User does not exist.
-
-  ## Examples
-
-      iex> get_chat_member(123)
-      %ChatMember{}
-
-      iex> get_chat_member(456)
-      nil
-
-  """
-  def get_chat_member(id), do: Repo.get(ChatMember, id)
-
-  @doc """
-  Creates a chat_member.
-
-  ## Examples
-
-      iex> create_chat_member(%{field: value})
-      {:ok, %ChatMember{}}
-
-      iex> create_chat_member(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_chat_member(attrs \\ %{}) do
-    %ChatMember{}
-    |> ChatMember.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Updates a chat_member.
-
-  ## Examples
-
-      iex> update_chat_member(chat_member, %{field: new_value})
-      {:ok, %ChatMember{}}
-
-      iex> update_chat_member(chat_member, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_chat_member(%ChatMember{} = chat_member, attrs) do
-    chat_member
-    |> ChatMember.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a ChatMember.
-
-  ## Examples
-
-      iex> delete_chat_member(chat_member)
-      {:ok, %ChatMember{}}
-
-      iex> delete_chat_member(chat_member)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_chat_member(%ChatMember{} = chat_member) do
-    Repo.delete(chat_member)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking chat_member changes.
-
-  ## Examples
-
-      iex> change_chat_member(chat_member)
-      %Ecto.Changeset{source: %ChatMember{}}
-
-  """
-  def change_chat_member(%ChatMember{} = chat_member) do
-    ChatMember.changeset(chat_member, %{})
-  end
-
-  @doc """
-  Returns the list of messages.
-
-  ## Examples
-
-      iex> list_messages()
-      [%Message{}, ...]
-
-  """
-  def list_messages do
-    Repo.all(Message)
-  end
-
-  @doc """
-  Gets a single message.
-
-  Raises `Ecto.NoResultsError` if the Message does not exist.
-
-  ## Examples
-
-      iex> get_message!(123)
-      %Message{}
-
-      iex> get_message!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_message!(id), do: Repo.get!(Message, id)
-
-  @doc """
-  Gets a single message.
-
-  Returns `nil` if the Message does not exist.
-
-  ## Examples
-
-      iex> get_message(123)
-      %Message{}
-
-      iex> get_message(456)
-      nil
-
-  """
-  def get_message(id), do: Repo.get(Message, id)
-
-  @doc """
-  Creates a message.
-
-  ## Examples
-
-      iex> create_message(%{field: value})
+      iex> send_message(attrs)
       {:ok, %Message{}}
 
-      iex> create_message(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      iex> send_message(attrs)
+      {:error, :user_not_in_chat}
 
   """
-  def create_message(attrs) do
-    CreateMessage.perform(attrs)
+  @spec send_message(SendMessage.attrs()) :: SendMessage.result()
+  def send_message(attrs) do
+    SendMessage.perform(attrs)
   end
 
   @doc """
-  Updates a message.
+  Sends a message to a user. If a chat doesn't exist between the users then it will
+  create a new one.
 
   ## Examples
 
-      iex> update_message(message, %{field: new_value})
+      iex> send_message_to_user(attrs)
       {:ok, %Message{}}
 
-      iex> update_message(message, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      iex> send_message_to_user(attrs)
+      {:error, :receiver_user_not_found}
 
   """
-  def update_message(%Message{} = message, attrs) do
-    message
-    |> Message.changeset(attrs)
-    |> Repo.update()
+  @spec send_message_to_user(%{id: T.id()}, %{user_id: T.id(), text: String.t()}) ::
+          SendMessageToUser.result()
+  def send_message_to_user(user, message) do
+    SendMessageToUser.perform(user, message)
   end
 
   @doc """
-  Deletes a Message.
+  Returns the `user`'s chats in Relay representation.
 
   ## Examples
 
-      iex> delete_message(message)
-      {:ok, %Message{}}
-
-      iex> delete_message(message)
-      {:error, %Ecto.Changeset{}}
-
+      iex> list_user_chats(current_user)
+      {
+        :ok,
+        %{
+          edges: [%{node: %Chat{}, cursor: cursor}],
+          page_info: page_info
+        }
+      }
   """
-  def delete_message(%Message{} = message) do
-    Repo.delete(message)
+  @spec list_user_chats(ListUserChats.user(), ListUserChats.relay_options()) ::
+          ListUserChats.result()
+  def list_user_chats(user, args \\ %{}) do
+    ListUserChats.perform(user, args)
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking message changes.
+  Returns the `user`'s chat members in Relay representation.
 
   ## Examples
 
-      iex> change_message(message)
-      %Ecto.Changeset{source: %Message{}}
-
+      iex> list_user_chats(current_user)
+      {
+        :ok,
+        %{
+          edges: [%{node: %ChatMember{}, cursor: cursor}],
+          page_info: page_info
+        }
+      }
   """
-  def change_message(%Message{} = message) do
-    Message.changeset(message, %{})
+  @spec list_user_chat_members(ListUserChatMembers.user(), ListUserChatMembers.relay_options()) ::
+          ListUserChatMembers.result()
+  def list_user_chat_members(user, args \\ %{}) do
+    ListUserChatMembers.perform(user, args)
+  end
+
+  @doc """
+  Returns visible messages for the `user` in Relay representation.
+
+  ## Examples
+
+      iex> list_user_messages(current_user)
+      {
+        :ok,
+        %{
+          edges: [%{node: %Message{}, cursor: cursor}],
+          page_info: page_info
+        }
+      }
+  """
+  @spec list_user_messages(ListUserMessages.user(), ListUserMessages.relay_options()) ::
+          ListUserMessages.result()
+  def list_user_messages(user, args \\ %{}) do
+    ListUserMessages.perform(user, args)
   end
 end

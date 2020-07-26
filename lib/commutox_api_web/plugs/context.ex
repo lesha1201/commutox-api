@@ -3,7 +3,7 @@ defmodule CommutoxApiWeb.Plugs.Context do
 
   import Plug.Conn
 
-  alias CommutoxApi.{Accounts}
+  alias CommutoxApi.Accounts
   alias CommutoxApi.Accounts.User
 
   def init(opts), do: opts

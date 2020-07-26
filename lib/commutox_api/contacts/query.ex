@@ -1,12 +1,13 @@
-defmodule CommutoxApi.Accounts.Contact.Query do
+defmodule CommutoxApi.Contacts.Query do
   @moduledoc """
-  SQL queries related to Contact.
+  SQL queries related to Contacts context.
   """
 
   import Ecto.Query, warn: false
 
-  alias CommutoxApi.Accounts.{Contact, User}
-  alias CommutoxUtils.Types, as: T
+  alias CommutoxApi.Accounts.User
+  alias CommutoxApi.Contacts.Contact
+  alias CommutoxApi.Types, as: T
 
   @doc """
   Gets contacts for specified user.
