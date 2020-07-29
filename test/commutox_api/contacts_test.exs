@@ -248,4 +248,64 @@ defmodule CommutoxApi.ContactsTest do
       assert {:error, :not_owner} = Contacts.remove_contact(user, contact)
     end
   end
+
+  describe "reject_contact" do
+    setup _context do
+      seed_contact_statuses()
+    end
+
+    test "updates a pending contact" do
+      {:ok, %{contact: %{id: contact_id} = contact, user_receiver: user_receiver}} =
+        contact_fixture(:pending, %{}, %{})
+
+      pending_status_code = Contacts.Constants.pending().code
+      rejected_status_code = Contacts.Constants.rejected().code
+
+      assert contact.status_code == pending_status_code
+
+      assert {:ok, %Contact{id: ^contact_id, status_code: ^rejected_status_code}} =
+               Contacts.reject_contact(user_receiver, contact)
+
+      assert %Contact{status_code: ^rejected_status_code} = Contacts.Store.get_contact(contact_id)
+    end
+
+    test "returns error when user is sender" do
+      {:ok, %{contact: contact, user_sender: user_sender}} = contact_fixture(:pending, %{}, %{})
+
+      assert {:error, :user_is_sender} = Contacts.reject_contact(user_sender, contact)
+    end
+
+    test "returns error when the contact isn't pending" do
+      {:ok, %{contact: contact, user_sender: user_sender, user_receiver: user_receiver}} =
+        contact_fixture(:rejected, %{}, %{})
+
+      assert {:error, :user_is_sender} = Contacts.reject_contact(user_sender, contact)
+      assert {:error, :not_pending_contact} = Contacts.reject_contact(user_receiver, contact)
+
+      {:ok, %{contact: contact, user_receiver: user_receiver}} =
+        contact_fixture(:rejected, %{}, %{})
+
+      assert {:error, :not_pending_contact} = Contacts.reject_contact(user_receiver, contact)
+    end
+
+    test "returns error when the user doesn't exist" do
+      {:ok, %{contact: contact}} = contact_fixture(:pending, %{}, %{})
+
+      assert {:error, :no_actor_user} = Contacts.remove_contact(%{id: -1}, contact)
+      assert {:error, :no_actor_user} = Contacts.remove_contact(%{id: -1}, %{id: -1})
+    end
+
+    test "returns error when the contact doesn't exist" do
+      {:ok, %{user: user}} = user_fixture()
+
+      assert {:error, :no_contact} = Contacts.remove_contact(user, %{id: -1})
+    end
+
+    test "returns error when the user isn't sender/receiver of the contact" do
+      {:ok, %{user: user}} = user_fixture()
+      {:ok, %{contact: contact}} = contact_fixture(:rejected, %{}, %{})
+
+      assert {:error, :not_owner} = Contacts.remove_contact(user, contact)
+    end
+  end
 end

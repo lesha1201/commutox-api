@@ -105,6 +105,23 @@ defmodule CommutoxApiWeb.Schema.Types.Contact do
       parsing_node_ids(&Resolvers.Contact.accept_contact/2, id: :contact)
       |> resolve()
     end
+
+    @desc """
+    Rejects a contact request for the current user. It can only reject a pending contact.
+    """
+    payload field(:reject_contact) do
+      input do
+        @desc "ID of Contact"
+        field :id, non_null(:id)
+      end
+
+      output do
+        field :contact, non_null(:contact)
+      end
+
+      parsing_node_ids(&Resolvers.Contact.reject_contact/2, id: :contact)
+      |> resolve()
+    end
   end
 
   # Objects
