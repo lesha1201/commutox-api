@@ -87,6 +87,42 @@ defmodule CommutoxApiWeb.Resolvers.Contact do
     {:error, Errors.unauthenticated()}
   end
 
+  @accept_contact_input_errors [
+    :not_owner,
+    :no_contact,
+    :not_pending_contact,
+    :user_is_sender
+  ]
+
+  @accept_contact_errors %{
+    no_contact: "Couldn't find such contact.",
+    not_owner: "Contact doesn't belong to you.",
+    not_pending_contact: "You can only accept a pending contact.",
+    user_is_sender: "You can't accept a contact you sent."
+  }
+
+  def accept_contact(args, %{context: %{current_user: current_user}}) do
+    case Contacts.accept_contact(current_user, %{id: Map.get(args, :id)}) do
+      {:ok, contact} ->
+        {:ok, %{contact: contact}}
+
+      {:error, error} when error in @accept_contact_input_errors ->
+        {:error,
+         Errors.invalid_input(%{
+           extensions: %{
+             details: [transform_domain_error(:accept_contact, error)]
+           }
+         })}
+
+      {:error, _error} ->
+        {:error, Errors.internal_error()}
+    end
+  end
+
+  def accept_contact(_, _) do
+    {:error, Errors.unauthenticated()}
+  end
+
   # Utils
 
   defp transform_domain_error(:add_contact, error_type) do
@@ -95,5 +131,9 @@ defmodule CommutoxApiWeb.Resolvers.Contact do
 
   defp transform_domain_error(:remove_contact, error_type) do
     Map.get(@remove_contact_errors, error_type)
+  end
+
+  defp transform_domain_error(:accept_contact, error_type) do
+    Map.get(@accept_contact_errors, error_type)
   end
 end

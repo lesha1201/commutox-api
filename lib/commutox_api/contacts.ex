@@ -4,7 +4,7 @@ defmodule CommutoxApi.Contacts do
   """
 
   alias CommutoxApi.Contacts.Contact
-  alias CommutoxApi.Contacts.Domain.{AddContact, ListUserContacts, RemoveContact}
+  alias CommutoxApi.Contacts.Domain.{AcceptContact, AddContact, ListUserContacts, RemoveContact}
 
   @doc """
   Returns the `user`'s contacts in Relay representation.
@@ -62,5 +62,22 @@ defmodule CommutoxApi.Contacts do
           RemoveContact.result()
   def remove_contact(actor_user, contact) do
     RemoveContact.perform(actor_user, contact)
+  end
+
+  @doc """
+  Accepts a contact request to the `user`. It can only accept a pending contact.
+
+  ## Examples
+
+      iex> accept_contact(user, contact)
+      {:ok, %Contact{}}
+
+      iex> accept_contact(user, contact)
+      {:error, :not_pending_contact}
+  """
+  @spec accept_contact(AcceptContact.user(), AcceptContact.contact()) ::
+          AcceptContact.result()
+  def accept_contact(user, contact) do
+    AcceptContact.perform(user, contact)
   end
 end

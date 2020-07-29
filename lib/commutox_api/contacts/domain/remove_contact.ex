@@ -6,8 +6,10 @@ defmodule CommutoxApi.Contacts.Domain.RemoveContact do
   alias CommutoxApi.Repo
   alias CommutoxApi.{Accounts, Contacts}
   alias CommutoxApi.Contacts.{Contact, Constants}
+  alias CommutoxApi.Contacts.Domain.Utils
 
-  @type error :: :not_owner | :no_actor_user | :no_contact | :contact_is_incoming_request
+  @type error ::
+          :not_owner | :no_actor_user | :no_contact | :contact_is_incoming_request | :unknown
   @type actor_user :: %{id: T.id()}
   @type contact :: %{id: T.id()}
   @type result ::
@@ -35,35 +37,33 @@ defmodule CommutoxApi.Contacts.Domain.RemoveContact do
       end
     end)
     |> Multi.run(:user_contact_type, fn _repo, %{actor_user: actor_user, contact: contact} ->
-      get_user_contact_type(actor_user, contact)
+      Utils.get_user_contact_type(actor_user, contact)
     end)
     |> Multi.run(:delete_contact, fn _repo, changes ->
       delete_contact(changes.user_contact_type, changes.contact)
     end)
     |> Repo.transaction()
     |> case do
-      {:ok, %{delete_contact: contact}} -> {:ok, contact}
-      {:error, :actor_user, error, _} -> {:error, error}
-      {:error, :contact, error, _} -> {:error, error}
-      {:error, :user_contact_type, error, _} -> {:error, error}
-      {:error, :delete_contact, error, _} -> {:error, error}
-      _ -> {:error, :unknown}
-    end
-  end
+      {:ok, %{delete_contact: contact}} ->
+        {:ok, contact}
 
-  defp get_user_contact_type(user, %{
-         user_receiver_id: user_receiver_id,
-         user_sender_id: user_sender_id
-       }) do
-    case user.id do
-      ^user_receiver_id ->
-        {:ok, :receiver}
+      {:error, :actor_user, error, _} ->
+        {:error, error}
 
-      ^user_sender_id ->
-        {:ok, :sender}
+      {:error, :contact, error, _} ->
+        {:error, error}
+
+      {:error, :user_contact_type, error, _} ->
+        {:error, error}
+
+      {:error, :delete_contact, %Ecto.Changeset{} = changeset, _} ->
+        {:error, :ecto_changeset, changeset}
+
+      {:error, :delete_contact, error, _} ->
+        {:error, error}
 
       _ ->
-        {:error, :not_owner}
+        {:error, :unknown}
     end
   end
 
