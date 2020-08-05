@@ -17,6 +17,10 @@ defmodule CommutoxApiWeb.Schema do
     import_fields(:contact_mutations)
   end
 
+  subscription do
+    import_fields(:chat_subscriptions)
+  end
+
   def plugins do
     [Absinthe.Middleware.Dataloader] ++ Absinthe.Plugin.defaults()
   end

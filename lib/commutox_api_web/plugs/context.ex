@@ -13,8 +13,12 @@ defmodule CommutoxApiWeb.Plugs.Context do
     Absinthe.Plug.put_options(conn, context: context)
   end
 
-  def build_context(conn) do
+  def build_context(%Plug.Conn{} = conn) do
     current_user = get_current_user(conn)
+    build_context(%{current_user: current_user})
+  end
+
+  def build_context(%{current_user: current_user}) do
     loader = create_dataloader()
 
     case current_user do
@@ -25,8 +29,7 @@ defmodule CommutoxApiWeb.Plugs.Context do
 
   defp get_current_user(conn) do
     with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
-         {:ok, claims} <- Accounts.Guardian.decode_and_verify(token),
-         {:ok, user} <- Accounts.Guardian.resource_from_claims(claims) do
+         {:ok, user, _claims} <- Accounts.Guardian.resource_from_token(token) do
       user
     else
       _ -> nil

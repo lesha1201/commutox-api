@@ -20,7 +20,10 @@ defmodule CommutoxApiWeb.Router do
     forward("/graphql", Absinthe.Plug, schema: CommutoxApiWeb.Schema)
 
     if Mix.env() == :dev do
-      forward("/graphiql", Absinthe.Plug.GraphiQL, schema: CommutoxApiWeb.Schema)
+      forward("/graphiql", Absinthe.Plug.GraphiQL,
+        schema: CommutoxApiWeb.Schema,
+        socket: CommutoxApiWeb.UserSocket
+      )
     end
   end
 

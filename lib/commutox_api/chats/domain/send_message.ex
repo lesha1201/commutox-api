@@ -27,6 +27,7 @@ defmodule CommutoxApi.Chats.Domain.SendMessage do
     |> validate_chat_existence(attrs.chat_id)
     |> validate_user_in_chat(%{user_id: attrs.user_id, chat_id: attrs.chat_id})
     |> Multi.insert(:message, message_changeset)
+    |> notify_subscribers()
     |> Repo.transaction()
     |> case do
       {:ok, %{message: message}} ->
@@ -82,6 +83,22 @@ defmodule CommutoxApi.Chats.Domain.SendMessage do
         chat ->
           {:ok, chat}
       end
+    end)
+  end
+
+  defp notify_subscribers(multi) do
+    Multi.run(multi, :notify_subscribers, fn repo,
+                                             %{message: message, validate_chat_existence: chat} ->
+      chat = repo.preload(chat, [:members])
+      members = Map.get(chat, :members, [])
+
+      Enum.map(members, fn member ->
+        Absinthe.Subscription.publish(CommutoxApiWeb.Endpoint, message,
+          new_message: member.user_id
+        )
+      end)
+
+      {:ok, members}
     end)
   end
 end

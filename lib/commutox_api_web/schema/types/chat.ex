@@ -8,24 +8,24 @@ defmodule CommutoxApiWeb.Schema.Types.Chat do
   alias CommutoxApiWeb.Resolvers
 
   object :chat_queries do
-    @desc "Gets a list of all chats current user can see"
+    @desc "Gets a list of all chats current user can see."
     connection field(:chats, node_type: :chat) do
       resolve(&Resolvers.Chat.list_chats/2)
     end
 
-    @desc "Gets a list of all chat members current user can see"
+    @desc "Gets a list of all chat members current user can see."
     connection field(:chat_members, node_type: :chat_member) do
       resolve(&Resolvers.Chat.list_chat_members/2)
     end
 
-    @desc "Gets a list of all messages current user can see"
+    @desc "Gets a list of all messages current user can see."
     connection field(:messages, node_type: :message) do
       resolve(&Resolvers.Chat.list_messages/2)
     end
   end
 
   object :chat_mutations do
-    @desc "Sends a message to a user or a chat"
+    @desc "Sends a message to a user or a chat."
     payload field(:send_message) do
       input do
         @desc "ID of Chat or User"
@@ -41,13 +41,22 @@ defmodule CommutoxApiWeb.Schema.Types.Chat do
     end
   end
 
+  object :chat_subscriptions do
+    @desc "Subscribes to new messages in the current user's chats."
+    field :new_message, non_null(:message) do
+      config(fn _, %{context: %{current_user: current_user}} ->
+        {:ok, topic: current_user.id}
+      end)
+    end
+  end
+
   connection(node_type: :chat_member)
 
   node object(:chat_member) do
     field :last_read_at, :naive_datetime
     field :inserted_at, non_null(:naive_datetime)
-    field :chat, :chat, resolve: dataloader(:commutox_repo)
-    field :user, :user, resolve: dataloader(:commutox_repo)
+    field :chat, non_null(:chat), resolve: dataloader(:commutox_repo)
+    field :user, non_null(:user), resolve: dataloader(:commutox_repo)
   end
 
   connection(node_type: :chat)
@@ -95,9 +104,9 @@ defmodule CommutoxApiWeb.Schema.Types.Chat do
   connection(node_type: :message)
 
   node object(:message) do
-    field :text, :string
+    field :text, non_null(:string)
     field :inserted_at, non_null(:naive_datetime)
-    field :chat, :chat, resolve: dataloader(:commutox_repo)
-    field :user, :user, resolve: dataloader(:commutox_repo)
+    field :chat, non_null(:chat), resolve: dataloader(:commutox_repo)
+    field :user, non_null(:user), resolve: dataloader(:commutox_repo)
   end
 end

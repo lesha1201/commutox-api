@@ -11,7 +11,7 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
   # Queries
 
   object :account_queries do
-    @desc "Gets a list of all users"
+    @desc "Gets a list of all users."
     connection field(:users, node_type: :user) do
       resolve(&Resolvers.Account.list_users/2)
     end
@@ -26,7 +26,7 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
   # Mutations
 
   object :account_mutations do
-    @desc "Signs up a user"
+    @desc "Signs up a user."
     payload field(:sign_up) do
       input do
         field :email, non_null(:string)
@@ -43,7 +43,7 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
       resolve(&Resolvers.Account.sign_up/2)
     end
 
-    @desc "Signs in a user"
+    @desc "Signs in a user."
     payload field(:sign_in) do
       input do
         field :email, non_null(:string)

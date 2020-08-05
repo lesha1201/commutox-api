@@ -15,12 +15,21 @@ defmodule CommutoxApiWeb.ChannelCase do
 
   use ExUnit.CaseTemplate
 
+  import Phoenix.ChannelTest
+
   alias Ecto.Adapters.SQL
+  alias CommutoxApi.Accounts
+  alias CommutoxApiWeb.UserSocket
+
+  @endpoint CommutoxApiWeb.Endpoint
 
   using do
     quote do
+      use Absinthe.Phoenix.SubscriptionTest, schema: CommutoxApiWeb.Schema
+
       # Import conveniences for testing with channels
-      use Phoenix.ChannelTest
+      import Phoenix.ChannelTest
+      import CommutoxApiWeb.ChannelCase
 
       # The default endpoint for testing
       @endpoint CommutoxApiWeb.Endpoint
@@ -35,5 +44,21 @@ defmodule CommutoxApiWeb.ChannelCase do
     end
 
     :ok
+  end
+
+  def connect_to_socket(%Accounts.User{} = user) do
+    case Accounts.Guardian.encode_and_sign(user) do
+      {:ok, token, _} -> connect_to_socket(token)
+      _ -> :error
+    end
+  end
+
+  def connect_to_socket(token) do
+    socket = socket(UserSocket)
+
+    case UserSocket.connect(%{"token" => token}, socket) do
+      {:ok, socket} -> socket
+      _ -> :error
+    end
   end
 end

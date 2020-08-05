@@ -2,33 +2,32 @@ defmodule CommutoxApiWeb.UserSocket do
   use Phoenix.Socket
   use Absinthe.Phoenix.Socket, schema: CommutoxApiWeb.Schema
 
-  ## Channels
-  # channel "room:*", CommutoxApiWeb.RoomChannel
+  alias CommutoxApi.Accounts
 
-  # Socket params are passed from the client and can
-  # be used to verify and authenticate a user. After
-  # verification, you can put default assigns into
-  # the socket that will be set for all channels, ie
-  #
-  #     {:ok, assign(socket, :user_id, verified_user_id)}
-  #
-  # To deny connection, return `:error`.
-  #
-  # See `Phoenix.Token` documentation for examples in
-  # performing token verification on connect.
-  def connect(_params, socket, _connect_info) do
-    {:ok, socket}
+  def connect(%{"token" => token}, socket) do
+    case Accounts.Guardian.resource_from_token(token) do
+      {:ok, user, _claims} ->
+        socket_with_opts =
+          socket
+          |> put_absinthe_options(user)
+          |> assign(:current_user, user)
+
+        {:ok, socket_with_opts}
+
+      {:error, _} ->
+        :error
+    end
   end
 
-  # Socket id's are topics that allow you to identify all sockets for a given user:
-  #
-  #     def id(socket), do: "user_socket:#{socket.assigns.user_id}"
-  #
-  # Would allow you to broadcast a "disconnect" event and terminate
-  # all active sockets and channels for a given user:
-  #
-  #     CommutoxApiWeb.Endpoint.broadcast("user_socket:#{user.id}", "disconnect", %{})
-  #
-  # Returning `nil` makes this socket anonymous.
+  def connect(_, _) do
+    :error
+  end
+
   def id(_socket), do: nil
+
+  defp put_absinthe_options(socket, user) do
+    Absinthe.Phoenix.Socket.put_options(socket,
+      context: CommutoxApiWeb.Plugs.Context.build_context(%{current_user: user})
+    )
+  end
 end

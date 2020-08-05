@@ -1,5 +1,4 @@
 defmodule CommutoxApi.Contacts.Domain.Utils do
-  alias CommutoxApi.Types, as: T
   alias CommutoxApi.Accounts.{User}
   alias CommutoxApi.Contacts.{Contact}
 
