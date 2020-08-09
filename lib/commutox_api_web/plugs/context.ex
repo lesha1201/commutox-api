@@ -28,9 +28,30 @@ defmodule CommutoxApiWeb.Plugs.Context do
   end
 
   defp get_current_user(conn) do
-    with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
+    token = get_auth_token(conn)
+
+    with true <- is_binary(token),
          {:ok, user, _claims} <- Accounts.Guardian.resource_from_token(token) do
       user
+    else
+      _ -> nil
+    end
+  end
+
+  defp get_auth_token(conn) do
+    conn = fetch_cookies(conn)
+    token = conn.cookies["_commutox_api_auth_token"]
+
+    if token do
+      token
+    else
+      get_authorization_header_token(conn)
+    end
+  end
+
+  defp get_authorization_header_token(conn) do
+    with ["Bearer " <> token] <- get_req_header(conn, "authorization") do
+      token
     else
       _ -> nil
     end

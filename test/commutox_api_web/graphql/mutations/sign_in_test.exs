@@ -38,8 +38,17 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SignInTest do
       }
     }
 
-    %{resp_decoded: resp_decoded} =
+    %{resp_cookies: resp_cookies, resp_decoded: resp_decoded} =
       conn |> graphql_query(query: @sign_in_mutation, variables: query_variables)
+
+    assert %{
+             "_commutox_api_auth_token" => %{
+               http_only: true,
+               max_age: 604_800,
+               same_site: "Lax",
+               value: token
+             }
+           } = resp_cookies
 
     assert %{
              "data" => %{

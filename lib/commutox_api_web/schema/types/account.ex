@@ -56,6 +56,14 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
       end
 
       resolve(&Resolvers.Account.sign_in/2)
+
+      middleware(fn resolution, _ ->
+        with %{value: %{token: token}} <- resolution do
+          Map.update!(resolution, :context, fn ctx ->
+            Map.put(ctx, :auth_token, token)
+          end)
+        end
+      end)
     end
   end
 

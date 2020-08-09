@@ -17,14 +17,36 @@ defmodule CommutoxApiWeb.Router do
   scope "/api" do
     pipe_through :api
 
-    forward("/graphql", Absinthe.Plug, schema: CommutoxApiWeb.Schema)
+    forward("/graphql", Absinthe.Plug,
+      schema: CommutoxApiWeb.Schema,
+      before_send: {__MODULE__, :absinthe_before_send}
+    )
 
     if Mix.env() == :dev do
       forward("/graphiql", Absinthe.Plug.GraphiQL,
         schema: CommutoxApiWeb.Schema,
-        socket: CommutoxApiWeb.UserSocket
+        socket: CommutoxApiWeb.UserSocket,
+        before_send: {__MODULE__, :absinthe_before_send}
       )
     end
+  end
+
+  def absinthe_before_send(conn, %Absinthe.Blueprint{} = blueprint) do
+    auth_token = blueprint.execution.context[:auth_token]
+
+    if auth_token do
+      put_resp_cookie(conn, "_commutox_api_auth_token", auth_token,
+        http_only: true,
+        same_site: "Lax",
+        max_age: 604_800
+      )
+    else
+      conn
+    end
+  end
+
+  def absinthe_before_send(conn, _) do
+    conn
   end
 
   # Enables LiveDashboard only for development
