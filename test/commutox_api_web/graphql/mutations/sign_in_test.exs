@@ -42,19 +42,19 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SignInTest do
       conn |> graphql_query(query: @sign_in_mutation, variables: query_variables)
 
     assert %{
-             "_commutox_api_auth_token" => %{
-               http_only: true,
-               max_age: 604_800,
-               same_site: "Lax",
-               value: token
-             }
-           } = resp_cookies
-
-    assert %{
              "data" => %{
                "signIn" => %{"user" => resp_user, "token" => token}
              }
            } = resp_decoded
+
+    assert %{
+             "_commutox_api_auth_token" => %{
+               http_only: true,
+               max_age: 604_800,
+               same_site: "Lax",
+               value: ^token
+             }
+           } = resp_cookies
 
     assert user.email == resp_user["email"]
     assert {:ok, _claims} = Accounts.Guardian.decode_and_verify(token)

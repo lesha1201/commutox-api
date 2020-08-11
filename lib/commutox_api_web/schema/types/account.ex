@@ -41,6 +41,8 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
       end
 
       resolve(&Resolvers.Account.sign_up/2)
+
+      middleware(&put_auth_token/2)
     end
 
     @desc "Signs in a user."
@@ -57,13 +59,7 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
 
       resolve(&Resolvers.Account.sign_in/2)
 
-      middleware(fn resolution, _ ->
-        with %{value: %{token: token}} <- resolution do
-          Map.update!(resolution, :context, fn ctx ->
-            Map.put(ctx, :auth_token, token)
-          end)
-        end
-      end)
+      middleware(&put_auth_token/2)
     end
   end
 
@@ -130,6 +126,16 @@ defmodule CommutoxApiWeb.Schema.Types.Account do
              message: "User chats are only available for the authenticated user."
            })}
         end
+      end)
+    end
+  end
+
+  # Functions
+
+  defp put_auth_token(resolution, _) do
+    with %{value: %{token: token}} <- resolution do
+      Map.update!(resolution, :context, fn ctx ->
+        Map.put(ctx, :auth_token, token)
       end)
     end
   end

@@ -30,7 +30,7 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SignUpTest do
       }
     }
 
-    %{resp_decoded: resp_decoded} =
+    %{resp_cookies: resp_cookies, resp_decoded: resp_decoded} =
       conn |> graphql_query(query: @sign_up_mutation, variables: query_variables)
 
     assert %{
@@ -38,6 +38,15 @@ defmodule CommutoxApiWeb.Graphql.Mutations.SignUpTest do
                "signUp" => %{"user" => %{"id" => global_id} = resp_user, "token" => token}
              }
            } = resp_decoded
+
+    assert %{
+             "_commutox_api_auth_token" => %{
+               http_only: true,
+               max_age: 604_800,
+               same_site: "Lax",
+               value: ^token
+             }
+           } = resp_cookies
 
     user_without_id = from_response_format(resp_user) |> Map.drop([:id])
     expected_user_without_id = query_variables.input |> Map.take([:email, :full_name])
