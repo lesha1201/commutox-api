@@ -10,6 +10,16 @@ defmodule CommutoxApiWeb.Router do
   end
 
   pipeline :api do
+    cors_options =
+      case Application.fetch_env(:commutox_api, :cors) do
+        {:ok, value} -> value
+        :error -> nil
+      end
+
+    if cors_options do
+      plug CORSPlug, cors_options
+    end
+
     plug :accepts, ["json"]
     plug CommutoxApiWeb.Plugs.Context
   end

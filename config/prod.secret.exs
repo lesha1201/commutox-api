@@ -27,6 +27,10 @@ config :commutox_api, CommutoxApiWeb.Endpoint,
   http: [:inet6, port: String.to_integer(System.get_env("PORT") || "4000")],
   secret_key_base: secret_key_base
 
+if System.get_env("CORS_ORIGIN") = cors_origin do
+  config :commutox_api, :cors, origin: cors_origin
+end
+
 guardian_secret_key =
   System.get_env("GUARDIAN_SECRET_KEY") ||
     raise """

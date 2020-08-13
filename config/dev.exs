@@ -22,6 +22,9 @@ config :commutox_api, CommutoxApiWeb.Endpoint,
   check_origin: false,
   watchers: []
 
+# CORS settings. See https://github.com/mschae/cors_plug for available options.
+config :commutox_api, :cors, origin: "*"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
