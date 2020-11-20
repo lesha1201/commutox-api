@@ -32,3 +32,8 @@ commutox_api-*.tar
 
 # VSCode
 .vscode/
+
+# Dotenv environment variables file
+.env
+.env.*
+!.env.example
